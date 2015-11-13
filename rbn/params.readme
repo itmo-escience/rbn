@@ -1,0 +1,87 @@
+# This is file containing documentation for parameters file in RBN 1.0
+# Author: Piotr Jan Gorski
+# Date: 2015-07-07
+# Possible variables are listed below. Each variable has its special name. In order to add a variable you need to write its name and afterwards value(s).
+# Names and values should be space-seperated.
+# Parameters are divided into 3 groups: model parameters (physics), simulation parameters (computer science) and saving-data parameters.
+# The lines below contain (here: coma-seperated) parameters' names, their default values (if not declared) and little information about them
+
+rbn_version,4,which rbn version should the param file be implementing mostly: 1 - normal HARBN, 2 - incrementing p, 3 - PAD in ARBN, 4 - updating intralinks
+structure,,filename with network structure (pajek net format). The number of nodes should be the same as in network_count (string)	OPTIONAL
+
+# In the case of rbn_version==1:
+
+network_count,0,number of networks (integer) REQUIRED
+network_sizes,,number of nodes in each network (vector of integers) REQUIRED
+prob,0,ratio of interconnections (double)					|
+tot_incon,0,total number of interconnections (integer)		|	ONE OF THESE TWO VARIABLES IS REQUIRED
+Kins,,initial in-degree connectivity in each network (vector of integers)	REQUIRED
+alpha,,parameters of Changing Rewiring Rule (explained in network.hpp) (vector of doubles) OPTIONAL
+alpha_prop,,see above (vector of doubles) OPTIONAL
+iterations,1000,total number of iterations in each realization (integer) OPTIONAL
+repetitions,10,number of realizations (integer) OPTIONAL
+
+# In the case of rbn_version==2:
+
+nlevels,3,number of levels	REQUIRED
+nodes,0,total number of nodes (integer)	REQUIRED
+levels,,a vector (length equal to nlevels) of integers, that specifies the structure of network during simulation. It should contain information about sizes of hierarchy levels, starting from the bottom level up to the top. The 1st integer should  contain number of network groups (small group of nodes) in the 1st level. ...  . The last integer should be 1. (vector of integers)	REQUIRED
+Kins,2,initial in-degree connectivity in each network (integer)	REQUIRED
+p,,value of p parameter in each level (vector of doubles)	REQUIRED
+iterations,1000,total number of iterations in each realization (integer) OPTIONAL
+repetitions,10,number of realizations (integer) OPTIONAL
+
+# In the case of rbn_version==3:
+
+nodes,0,number of nodes (integer) REQUIRED
+Kins,,initial in-degree connectivity in each network (vector of integers)	REQUIRED
+alpha,,parameters of Changing Rewiring Rule (explained in network.hpp) (vector of doubles) OPTIONAL
+alpha_prop,,see above (vector of doubles) OPTIONAL
+link_update,3,how to update connections: 0-normal HARBN, 1-PA, 2-PD, 3-PAD (integer in range 0-3)	REQUIRED
+iterations,1000,total number of iterations in each realization (integer) OPTIONAL
+repetitions,10,number of realizations (integer) OPTIONAL
+
+# In the case of rbn_version==4:
+
+network_count,0,number of networks (integer) REQUIRED
+network_sizes,,number of nodes in each network (vector of integers) REQUIRED
+prob,0,ratio of interconnections (double)					|
+tot_incon,0,total number of interconnections (integer)		|	ONE OF THESE TWO VARIABLES IS REQUIRED
+Kins,,initial in-degree connectivity in each network (vector of integers)	REQUIRED
+alpha,,parameters of Changing Rewiring Rule (explained in network.hpp) (vector of doubles) OPTIONAL
+alpha_prop,,see above (vector of doubles) OPTIONAL
+link_update,3,how to update connections: 0-normal HARBN, 1-PA, 2-PD, 3-PAD (integer in range 0-3)	REQUIRED
+scheme,2,the scheme of simulation: 0 - update only intralinks, 1 - update only interlinks, 2 - update by turns intra- and interlinks REQUIRED
+iterations,1000,total number of iterations in each realization (integer) OPTIONAL
+repetitions,10,number of realizations (integer) OPTIONAL
+initial_iterations,200,number of initial iterations in 2 simulation scheme (see readme file) OPTIONAL
+later_iterations,100,number of iterations in 2 simulation scheme (see readme file) OPTIONAL
+
+# Same saving parameters for all versions:
+
+inform_after,10,after how many informations should the user be informed about the progress (integer) OPTIONAL
+save_hist_from,100,start saving hist information after save_hist_from iterations (integer) OPTIONAL
+each_Kin,0,save Kin after each iteration (boolean, right 1 or 0) OPTIONAL
+hist_Kin,0,save histogram Kin data (boolean, right 1 or 0) OPTIONAL
+hist_Kout,0,save histogram Kout data (boolean, right 1 or 0) OPTIONAL
+hist_info,0,save histogram info data (boolean, right 1 or 0) OPTIONAL
+hist_last,0,save histogram data after last iteration (boolean, right 1 or 0) OPTIONAL
+each_period,0,save period of each iteration (boolean, right 1 or 0) OPTIONAL
+each_basin,0,save period and basin length (boolean, right 1 or 0) OPTIONAL
+pajek_structure,0,save pajek structure of 1st and last structure (boolean, right 1 or 0) OPTIONAL
+add_on,,this will be added to the end of the file (string) OPTIONAL
+
+#Example:
+network_count 2
+network_sizes 10 10
+tot_incon 10
+Kins 2 2
+iterations 1000
+repetitions 1
+inform_after 999
+save_hist_from 0
+each_Kin 1
+hist_Kin 1
+hist_info 1
+hist_last 1
+each_period 1

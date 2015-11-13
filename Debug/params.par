@@ -1,0 +1,16 @@
+rbn_version 1
+network_count 2
+network_sizes 20 20
+tot_incon 10
+Kins 2 2
+iterations 1000
+repetitions 1
+inform_after 50
+save_hist_from 0
+each_Kin 1
+hist_Kout 1
+pajek_structure 1
+hist_Kin 1
+hist_info 1
+each_period 1
+add_on 7_7_15

@@ -1,0 +1,59 @@
+﻿Build started 11.11.2015 19:44:13.
+     1>Project "C:\Users\magistr\Downloads\~rbn\rbn\rbn\rbn.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\rbn.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       AddCudaCompileDeps:
+       Skipping target "AddCudaCompileDeps" because all output files are up-to-date with respect to the input files.
+       CudaBuild:
+       Skipping target "CudaBuild" because all output files are up-to-date with respect to the input files.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include" /ZI /nologo /W3 /WX- /Od /Oy- /D ENABLE_GPU_ACCELERATION /D WIN32 /D _DEBUG /D _CONSOLE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt hsystem.cpp
+         hsystem.cpp
+     1>c:\users\magistr\downloads\~rbn\rbn\rbn\node.hpp(51): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\magistr\downloads\~rbn\rbn\rbn\node.hpp(51): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\xutility(2813): warning C4996: 'std::_Fill_n': Function call with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\xutility(2799) : see declaration of 'std::_Fill_n'
+                 c:\users\magistr\downloads\boost_1_59_0\boost_1_59_0\boost\random\detail\polynomial.hpp(114) : see reference to function template instantiation 'void std::fill_n<boost::random::detail::polynomial_ops::digit_t*,size_t,boost::random::detail::polynomial_ops::digit_t>(_OutIt,_Diff,const _Ty &)' being compiled
+                 with
+                 [
+                     _OutIt=boost::random::detail::polynomial_ops::digit_t *,
+                     _Diff=size_t,
+                     _Ty=boost::random::detail::polynomial_ops::digit_t
+                 ]
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\magistr\Downloads\~rbn\rbn\Debug\rbn.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\lib\Win32" cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\rbn.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\magistr\Downloads\~rbn\rbn\Debug\rbn.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\magistr\Downloads\~rbn\rbn\Debug\rbn.lib" /MACHINE:X86 Debug\dev_find_attractor.cu.obj
+         Debug\rbn.exe.embed.manifest.res
+         Debug\boolean_functions.obj
+         Debug\find_attractor.obj
+         Debug\dev_network.obj
+         Debug\handler.obj
+         Debug\hparams.obj
+         Debug\hsystem.obj
+         Debug\my_random.obj
+         Debug\network.obj
+         Debug\node.obj
+         Debug\rbn3.obj
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\rbn.exe.embed.manifest" /manifest Debug\rbn.exe.intermediate.manifest
+         All outputs are up-to-date.
+       LinkEmbedManifest:
+         All outputs are up-to-date.
+         rbn.vcxproj -> C:\Users\magistr\Downloads\~rbn\rbn\Debug\rbn.exe
+       PostBuildEvent:
+         echo copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\bin\cudart*.dll" "C:\Users\magistr\Downloads\~rbn\rbn\Debug\"
+         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\bin\cudart*.dll" "C:\Users\magistr\Downloads\~rbn\rbn\Debug\"
+         :VCEnd
+         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\bin\cudart*.dll" "C:\Users\magistr\Downloads\~rbn\rbn\Debug\"
+         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\bin\cudart32_55.dll
+         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\bin\cudart64_55.dll
+         Скопировано файлов:         2.
+       FinalizeBuildStatus:
+         Deleting file "Debug\rbn.unsuccessfulbuild".
+         Touching "Debug\rbn.lastbuildstate".
+     1>Done Building Project "C:\Users\magistr\Downloads\~rbn\rbn\rbn\rbn.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.33

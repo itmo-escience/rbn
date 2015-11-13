@@ -1,0 +1,17 @@
+rbn_version 2
+nlevels 2
+nodes 20
+levels 2 1
+Kins 2
+p 0.5 0.6
+iterations 1000
+repetitions 1
+inform_after 999
+save_hist_from 0
+each_Kin 1
+hist_Kin 1
+hist_info 1
+hist_Kout 1
+pajek_structure 1
+each_period 1
+add_on 7_7_15
