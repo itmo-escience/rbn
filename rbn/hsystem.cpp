@@ -290,13 +290,14 @@ void hsystem::generate_interconnections(int c){
 
 std::ofstream get_times_file(const std::string& worker, int nodes_count) {
 	std::stringstream ss;
-	ss << worker << "_times_" << nodes_count << ".txt";
+	ss << worker << "_1M_times_" << nodes_count << ".txt";
 	return std::ofstream (ss.str());
 }
 
 int hsystem::find_attractor(void){
 	clock_t time = clock();
 #ifdef ENABLE_GPU_ACCELERATION
+	std::cout << "GPU" << std::endl;
 	static std::ofstream times_file = get_times_file("gpu", all.size());
 	int length = 0;
 	try {
@@ -317,7 +318,7 @@ int hsystem::find_attractor(void){
 		state1.push_back(ints() );
 	}
 
-	for(i = 1, k = 0; i < T[max]; ++i){
+	for(i = 1, k = 0; i < 100000/*T[max]*/; ++i){
 		for(j = 0; j < nets.size(); ++j){
 			//cout << (*nets[j]);
 			nets[j]->update_state();
@@ -325,7 +326,7 @@ int hsystem::find_attractor(void){
 			state1[j] = nets[j]->get_network_state();
 		}
 
-		if(state0 == state1)
+		/*if(state0 == state1)
 			break;
 
 		if(i == T[k]){
@@ -335,7 +336,7 @@ int hsystem::find_attractor(void){
 			for(j = 0; j < nets.size(); ++j){
 				nets[j]->clear_sum(); //czyszczenie sumy stanow wezlow (potrzebne do wzoru 3)
 			}
-		}
+		}*/
 	}
 
 	it = i;
@@ -349,7 +350,7 @@ int hsystem::find_attractor(void){
 		this->T = i - T[k-1];
 	}
 #endif
-	times_file << this->T << "\t" << ((float) clock() - time)/CLOCKS_PER_SEC << endl;
+	times_file << ((float) clock() - time)/CLOCKS_PER_SEC << ", ";
 	times_file.flush();
 	return this->T;
 }
