@@ -160,6 +160,14 @@ void network::update_state(void){
 	}
 }
 
+void network::update_state_old(void){
+	nodes_it it;
+	it = n_all.begin();
+	for(int j = 0; j < N; ++j, ++it){
+		(*it)->update_state_old(); //aktualizacja stanow wezlow
+	}
+}
+
 void network::clear_sum(void){
 	nodes_it it;
 	int j;

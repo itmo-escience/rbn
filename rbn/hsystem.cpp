@@ -294,11 +294,19 @@ std::ofstream get_times_file(const std::string& worker, int nodes_count) {
 	return std::ofstream (ss.str());
 }
 
+#include <iterator>
+
+struct print_node {
+	void operator() (const node_ptr& np) {
+		std::cout << np->get_state();
+	}
+};
+
 int hsystem::find_attractor(void){
 	clock_t time = clock();
-#ifdef ENABLE_GPU_ACCELERATION
+//#ifndef ENABLE_GPU_ACCELERATION
 	std::cout << "GPU" << std::endl;
-	static std::ofstream times_file = get_times_file("gpu", all.size());
+	//static std::ofstream times_file = get_times_file("gpu", all.size());
 	int length = 0;
 	try {
 		length = gpu_acc::find_attractor(all);
@@ -306,27 +314,32 @@ int hsystem::find_attractor(void){
 		std::cout << e.what();
 	}
 	this->T = length;
-#else
-	static std::ofstream times_file = get_times_file("cpu", all.size());
+
+	std::cout << "GPU " << this->T << std::endl;
+//#else
+	//static std::ofstream times_file = get_times_file("cpu", all.size());
 	unsigned int T[] = {100, 1000, 10000, 100000};
 	const int max = sizeof(T) / sizeof(unsigned int) - 1;
 	unsigned int i, j, k;
-	//nodes_it it;
+	nodes_it it;
 
 	ints2 state0 = state, state1;
 	for(j = 0; j < nets.size(); ++j){
 		state1.push_back(ints() );
 	}
 
-	for(i = 1, k = 0; i < 100000/*T[max]*/; ++i){
+	for(i = 1, k = 0; i < T[max]; ++i){
 		for(j = 0; j < nets.size(); ++j){
 			//cout << (*nets[j]);
 			nets[j]->update_state();
 			//cout << i;
 			state1[j] = nets[j]->get_network_state();
 		}
+		for(j = 0; j < nets.size(); ++j){
+			nets[j]->update_state_old();
+		}
 
-		/*if(state0 == state1)
+		if(state0 == state1)
 			break;
 
 		if(i == T[k]){
@@ -336,10 +349,10 @@ int hsystem::find_attractor(void){
 			for(j = 0; j < nets.size(); ++j){
 				nets[j]->clear_sum(); //czyszczenie sumy stanow wezlow (potrzebne do wzoru 3)
 			}
-		}*/
+		}
 	}
 
-	it = i;
+	//it = i;
 	this->T = i;
 
 	if(i == T[max]){
@@ -349,9 +362,13 @@ int hsystem::find_attractor(void){
 	else if(k > 0) {
 		this->T = i - T[k-1];
 	}
-#endif
-	times_file << ((float) clock() - time)/CLOCKS_PER_SEC << ", ";
-	times_file.flush();
+	
+	std::cout << "CPU " << this->T << std::endl;
+
+	std::cin >> i;
+//#endif
+	//times_file << ((float) clock() - time)/CLOCKS_PER_SEC << ", ";
+	//times_file.flush();
 	return this->T;
 }
 

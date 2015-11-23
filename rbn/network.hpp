@@ -41,6 +41,7 @@ public:
 	node_ptr get_random_node(); //losuje wezel
 
 	void update_state(void); //aktualizuje stan sieci
+	void update_state_old(void); //updates old state, has to be called after updating system state
 	void clear_sum(void); //czysci sumy/zmian wszystkich wezlow
 	long find_attractor(void); //znajduje atraktor danej sieci i zwraca jego okres 
 	void update_connection(void); //updateituje na podstawie wyniku szukania atraktora

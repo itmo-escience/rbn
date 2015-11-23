@@ -23,6 +23,7 @@ int main(int argc, char* argv[]){
 	string addon;
 	bool pajek_structure = false;
 	if(argc == 1){
+		/*
 		levels.push_back(20); //20 nodes
 		levels.push_back(2); //2 subnetworks
 		levels.push_back(1);
@@ -35,6 +36,12 @@ int main(int argc, char* argv[]){
 		addon = "3_2_15";
 
 		pajek_structure = true;
+		*/
+					//cout << "fdfd " <<
+		handler h;
+		h = handler("params.par");
+		h.work();
+		return 0;
 	}
 	else if(argc == 2){
 			//cout << "fdfd " <<

@@ -1,6 +1,6 @@
 rbn_version 1
 network_count 2
-network_sizes 2500 2500
+network_sizes 2000 2000
 tot_incon 10
 Kins 2 2
 iterations 10

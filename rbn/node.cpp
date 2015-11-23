@@ -541,7 +541,7 @@ int node::remove_in_connection(const node_ptr& a){ //usuwa polaczenie wejsciowe 
 }
 
 void node::update_state(){
-		state_old = state;
+		//state_old = state;
 
 		state = funs->get_value(input);
 

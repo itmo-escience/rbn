@@ -16,7 +16,7 @@ namespace gpu_acc {
 int find_attractor(std::set<node_ptr>& nodes) {
 	network net(nodes);
 	int length = dev_find_attractor(net);
-	net.notify_nodes(nodes);
+	//net.notify_nodes(nodes);
 	return length;
 }
 
