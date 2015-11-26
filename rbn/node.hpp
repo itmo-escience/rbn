@@ -66,6 +66,7 @@ public:
 
 //changing/updating states functions
 	void update_state(); //aktualizacja stanow na podstawie wejsc
+	void update_state_old();
 	void set_state(int k) {state = k; state_old = k;}
 	void clear_sum(void) { sum = 0; changes = 0;}
 

@@ -550,6 +550,10 @@ void node::update_state(){
 			changes += 1;
 }
 
+void node::update_state_old(){
+		state_old = state;
+}
+
 double node::calc_CC(){ //calculate clustering coefficient
 	if(Kin+Kout < 2) {//CC is undefined
 		CC = -1.0;
