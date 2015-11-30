@@ -10,9 +10,16 @@
 
 namespace gpu_acc {
 
+/*
+	Accessing memory on GPU is very time-consuming. That's why we need different data structure to
+	represent our network. We use contigious storage for node states, behavior and boolean functions.
+*/
+
 struct network {
+	// Constructor depends on the fact that (node_a < node_b) <=> (node_a.code < node_b.code) 
 	network(const std::set<node_ptr>& nodes);
 
+	// Update CPU data structure after GPU calculations
 	void notify_nodes(std::set<node_ptr>& nodes) const;
 
 	std::vector<int>& state() { return m_state; };
