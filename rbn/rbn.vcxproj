@@ -167,8 +167,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClInclude Include="boolean_functions.hpp" />
     <ClInclude Include="fluctuation.hpp" />
-    <ClInclude Include="gpu_acc\array_view.hpp" />
-    <ClInclude Include="gpu_acc\boolean_function.hpp" />
     <ClInclude Include="gpu_acc\boolean_functions.hpp" />
     <ClInclude Include="gpu_acc\dev_find_attractor.hpp" />
     <ClInclude Include="gpu_acc\find_attractor.hpp" />

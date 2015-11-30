@@ -1,24 +1,32 @@
 #ifndef GPU_ACC__BOOLEAN_FUNCTIONS_HPP
 #define GPU_ACC__BOOLEAN_FUNCTIONS_HPP
 
-#include <ctime>
-#include <iterator>
-#include <vector>
 #include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
 
 #include "../node_fwd.hpp"
 
-#include "array_view.hpp"
-#include "boolean_function.hpp"
-
 namespace gpu_acc {
+
+/*
+	Current boolean functions representation is quite messy, and there is a better way to do it,
+	but for now it's okay: performance implications on non-coalesced memory access are small
+	compared to	time needed to call the kernel (GPU update_state function).
+	
+	Here is how one node's BF is represented in memory (max K_in = 3, node's K_in = 2):
+	
+	[ 2 inputs ][ 1, 0, 1, 0, ?, ?, ?, ? ][ node0, node2, ? ] // C++ type system cries out loud here
+	
+	"?" means that the value is undefined (we don't use it)
+
+	This class uses the following assumptions:
+		- m_args_size is always equal to `max K_in`,
+		- m_function_size is always equal to 2 ^ `max K_in`
+*/
 
 class boolean_functions {
 public:
 	boolean_functions(int func_size, int args_size, const thrust::device_vector<int>& storage);
 
-	__device__ boolean_function operator[] (size_t index) const;
 	__device__ int operator() (size_t index, const int* xs) const;
 private:
     int m_function_size;

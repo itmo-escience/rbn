@@ -71,7 +71,7 @@ void find_attractor_kernel(int nodes_count, const int* xs, int* ys, node_behavio
 int dev_find_attractor(network& net) {
 	dev_init();
 	int x;
-	unsigned int T[] = {100, 1000, 10000, 1000000};
+	unsigned int T[] = {100, 1000, 10000, 100000, 1000000};
 	const int max = sizeof(T) / sizeof(unsigned int) - 1;
 	unsigned int i, k;
 	size_t nodes_count = net.state().size();
@@ -100,7 +100,6 @@ int dev_find_attractor(network& net) {
 		node_behavior* b_ptr = thrust::raw_pointer_cast(dev_behavior.data());
 		int* ref_ptr = thrust::raw_pointer_cast(state0.data());
 		bool* eq_to_ref_ptr = thrust::raw_pointer_cast(dev_eq_to_ref.data());
-		//int* ref_eq_ptr = thrust::raw_pointer_cast(equal_to_reference_state.data());
 		
 		update_state<<<blocks_count, threads_count, 0, stream>>> (i,
 			nodes_count,
@@ -111,11 +110,6 @@ int dev_find_attractor(network& net) {
 			ref_ptr, // reference state
 			eq_to_ref_ptr + ((i - 1) % check_state_each)
 		);
-		
-		/*thrust::copy(state0.begin(), state0.end(), std::ostream_iterator<int>(std::cout, ""));
-		std::cout << " = ";
-		thrust::copy(ys.begin(), ys.end(), std::ostream_iterator<int>(std::cout, ""));
-		std::cout << std::endl;*/
 
 		xs.swap(ys);
 
@@ -127,7 +121,7 @@ int dev_find_attractor(network& net) {
 			thrust::fill(dev_eq_to_ref.begin(), dev_eq_to_ref.end(), true);
 		}
 		if(attractor_found_on > 0) {
-			//break;
+			break;
 		}
 
 		if(i == T[k]){
