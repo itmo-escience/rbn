@@ -8,7 +8,9 @@ Launch Visual Studio and open "rbn.sln". Add boost to include dirs in project pr
 Build using CMake build system. CMake automatically finds CUDA and boost if they are installed. You should build the project in a custom directory as CMake produces many temporary files. I added "/build" directory to .gitignore, so you probably should use this name:
 
 $ mkdir build && cd build
+
 $ cmake ../rbn
+
 $ make
 
 If CMake doesn't find boost, try setting BOOST_ROOT environment variable.
