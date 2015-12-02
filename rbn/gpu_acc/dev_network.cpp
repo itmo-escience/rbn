@@ -19,6 +19,7 @@ void network::notify_nodes(std::set<node_ptr>& nodes) const {
 		n.sum = b.sum;
 		n.changes = b.changes;
 		n.state = *state_it;
+		std::cout << b.changes << " ";
 	}
 }
 

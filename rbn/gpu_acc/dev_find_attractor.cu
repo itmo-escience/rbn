@@ -28,13 +28,16 @@ dev_rm& dev_init() {
 
 __global__
 void update_state(int iter, int nodes_count, const int* xs, int* ys, node_behavior* behavior,
-					boolean_functions fs, int* ref, bool* eq_to_ref)
+					boolean_functions fs, int* ref, bool* already_found, bool* eq_to_ref)
 {
+	if(*already_found) return;
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if(idx < nodes_count) {
 		int x = xs[idx];
 		int y = fs(idx, xs);
-		behavior[idx].changes += (x != y);
+		if(x != y) {
+			behavior[idx].changes += 1;
+		}
 		behavior[idx].sum += y;
 		ys[idx] = y;
 		if(y != ref[idx]) {
@@ -80,7 +83,7 @@ int dev_find_attractor(network& net) {
 		--blocks_count;
 	}
 	
-	thrust::device_vector<int> state0 = net.state(), xs = net.state(), ys = net.state();
+	thrust::device_vector<int> state0 = net.state(), xs = net.state(), ys(net.state().size(), 0);
 	thrust::device_vector<node_behavior> dev_behavior = net.behavior();
 	thrust::device_vector<int> functions_storage = net.functions();
 	boolean_functions bfs(net.function_size(), net.arguments_size(), functions_storage);
@@ -88,9 +91,10 @@ int dev_find_attractor(network& net) {
 	int attractor_found_on = 0;
 	// Synchronizing CPU and GPU after each kernel invokation (update_state) is very expensive
 	// So we run (check_state_each) iterations, and then check if attractor was found
-	int check_state_each = 98;
-	thrust::device_vector<bool> dev_eq_to_ref(check_state_each);
+	int check_state_each = 25;
+	thrust::device_vector<bool> dev_eq_to_ref(check_state_each + 1);
 	thrust::fill(dev_eq_to_ref.begin(), dev_eq_to_ref.end(), true);
+	dev_eq_to_ref[0] = false;
 	for(i = 1, k = 0; i < T[max]; ++i){
 		int* xs_ptr = thrust::raw_pointer_cast(xs.data());
 		int* ys_ptr = thrust::raw_pointer_cast(ys.data());
@@ -105,21 +109,57 @@ int dev_find_attractor(network& net) {
 			b_ptr,
 			bfs,
 			ref_ptr, // reference state
-			eq_to_ref_ptr + ((i - 1) % check_state_each)
+			eq_to_ref_ptr + ((i - 1) % check_state_each),
+			eq_to_ref_ptr + ((i - 1) % check_state_each + 1)
 		);
 
 		xs.swap(ys);
 
-		if(i % check_state_each == 0) {
+		cudaDeviceSynchronize();
+
+		if(i % check_state_each == 0) { // 123425
 			thrust::device_vector<bool>::iterator eq_to_ref_on = thrust::find(dev_eq_to_ref.begin(), dev_eq_to_ref.end(), true);
 			if(eq_to_ref_on != dev_eq_to_ref.end()) {
 				attractor_found_on = ((i - 1) / check_state_each) * check_state_each + thrust::distance(dev_eq_to_ref.begin(), eq_to_ref_on) + 1;
 			}
 			thrust::fill(dev_eq_to_ref.begin(), dev_eq_to_ref.end(), true);
+			dev_eq_to_ref[0] = false;
 		}
 		if(attractor_found_on > 0) {
 			break;
 		}
+
+		std::cout << "iteration " << i << ": " << std::endl;
+
+		std::cout << " State[i]: ";
+		thrust::host_vector<int> state = xs;
+		for(size_t j = 0; j < state.size(); ++j) {
+			std::cout << state[j] << " ";
+		}
+		std::cout << std::endl;
+
+		std::cout << " State[0]: ";
+		thrust::host_vector<int> st0 = state0;
+		for(size_t j = 0; j < st0.size(); ++j) {
+			std::cout << st0[j] << " ";
+		}
+		std::cout << std::endl;
+
+		thrust::host_vector<bool> etr = dev_eq_to_ref;
+		int asd = ((i - 1) % check_state_each + 1);
+		std::cout << "etr[" << asd << "](" << etr[asd] << "): ";
+		for(size_t j = 0; j < etr.size(); ++j) {
+			std::cout << etr[j] << " ";
+		}
+		std::cout << std::endl;
+
+		std::cout << " Behavior: ";
+		thrust::host_vector<node_behavior> behavior = dev_behavior;
+		for(size_t j = 0; j < behavior.size(); ++j) {
+			std::cout << behavior[j].changes << " ";
+		}
+		std::cout << std::endl;
+		std::cin >> etr[0];
 
 		if(i == T[k]){
 			++k;
@@ -134,12 +174,13 @@ int dev_find_attractor(network& net) {
 	
 	thrust::host_vector<node_behavior> behavior = dev_behavior;
 	net.behavior() = std::vector<node_behavior>(behavior.begin(), behavior.end());
-	
+
 	if(attractor_found_on == 0){
 		std::cout << "koniec";// << std::endl;
 		return T[max] - T[max - 1];
 	}
 	else if(k > 0) {
+		std::cout << "On " << attractor_found_on << " ";
 		return attractor_found_on - T[k-1];
 	}
 	else return attractor_found_on;
