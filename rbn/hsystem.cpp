@@ -298,7 +298,6 @@ int hsystem::find_attractor(void){
 		std::cout << e.what();
 	}
 	this->T = length;
-	std::cout << this->T << std::endl;
 #else
 	//static std::ofstream times_file = get_times_file("cpu", all.size());
 	unsigned int T[] = {100, 1000, 10000, 100000};

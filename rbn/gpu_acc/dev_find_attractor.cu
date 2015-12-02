@@ -70,8 +70,7 @@ void find_attractor_kernel(int nodes_count, const int* xs, int* ys, node_behavio
 
 int dev_find_attractor(network& net) {
 	dev_init();
-	int x;
-	unsigned int T[] = {100, 1000, 10000, 100000, 1000000};
+	unsigned int T[] = {100, 1000, 10000, 100000};
 	const int max = sizeof(T) / sizeof(unsigned int) - 1;
 	unsigned int i, k;
 	size_t nodes_count = net.state().size();
@@ -92,8 +91,6 @@ int dev_find_attractor(network& net) {
 	int check_state_each = 98;
 	thrust::device_vector<bool> dev_eq_to_ref(check_state_each);
 	thrust::fill(dev_eq_to_ref.begin(), dev_eq_to_ref.end(), true);
-	cudaStream_t stream;
-	cudaStreamCreate(&stream);
 	for(i = 1, k = 0; i < T[max]; ++i){
 		int* xs_ptr = thrust::raw_pointer_cast(xs.data());
 		int* ys_ptr = thrust::raw_pointer_cast(ys.data());
@@ -101,7 +98,7 @@ int dev_find_attractor(network& net) {
 		int* ref_ptr = thrust::raw_pointer_cast(state0.data());
 		bool* eq_to_ref_ptr = thrust::raw_pointer_cast(dev_eq_to_ref.data());
 		
-		update_state<<<blocks_count, threads_count, 0, stream>>> (i,
+		update_state<<<blocks_count, threads_count>>> (i,
 			nodes_count,
 			xs_ptr,
 			ys_ptr,
