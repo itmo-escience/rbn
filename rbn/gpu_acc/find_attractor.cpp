@@ -11,11 +11,14 @@
 #include "dev_find_attractor.hpp"
 #include "node_behavior.hpp"
 
+#include <iostream>
+
 namespace gpu_acc {
 
 int find_attractor(std::set<node_ptr>& nodes) {
 	network net(nodes);
 	int length = dev_find_attractor(net);
+	//std::cout << "gpu sum[0]: " << net.behavior()[0].sum << std::endl;
 	net.notify_nodes(nodes);
 	return length;
 }

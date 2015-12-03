@@ -45,35 +45,38 @@ void update_state(int iter, int nodes_count, const int* xs, int* ys, node_behavi
 		}
 	}
 }
-/*
-__device__ unsigned int threads_working;
 
-__device__
-void sync_system() {
-	while(threads_working != 0);
+int equal_to_reference_on_iteration(const thrust::device_vector<bool>& etr_vector, int relative_to) {
+	thrust::device_vector<bool>::const_iterator etr_on = thrust::find(etr_vector.begin(), etr_vector.end(), true);
+	if(etr_on != etr_vector.end()) {
+		return relative_to + thrust::distance(etr_vector.begin(), etr_on);
+	} else {
+		return 0;
+	}
 }
 
-__global__
-void find_attractor_kernel(int nodes_count, const int* xs, int* ys, node_behavior* behavior,
-							boolean_functions fs, int* reference_state) {
-	threads_working = 0;
-	int idx = blockIdx.x * blockDim.x + threadIdx.x;
-	if(idx == 0) {
-		//
-	}
-	sync_system();
+void clear_eq_to_ref(thrust::device_vector<bool>& etr_vector) {
+	thrust::fill(etr_vector.begin(), etr_vector.end(), true);
+	etr_vector[0] = false;
+}
 
-	for(int i = 0; i < 100000; ++i) {
-		update_state(idx, nodes_count, xs, ys, behavior[idx], fs, reference_state[idx]);
-		sync_system();
-	}
-}*/
+void clear_behavior(thrust::device_vector<node_behavior>& behavior) {
+	thrust::fill(behavior.begin(), behavior.end(), node_behavior());
+}
+
+void get_results_from_gpu(thrust::device_vector<int>& state, thrust::device_vector<node_behavior>& behavior, network& net) {
+	thrust::host_vector<int> h_state = state;
+	net.state() = std::vector<int>(h_state.begin(), h_state.end());
+	
+	thrust::host_vector<node_behavior> h_behavior = behavior;
+	net.behavior() = std::vector<node_behavior>(h_behavior.begin(), h_behavior.end());
+}
 
 } // namespace
 
 int dev_find_attractor(network& net) {
 	dev_init();
-	unsigned int T[] = {100, 1000, 10000, 100000};
+	unsigned int T[] = {100, 1000, 10000, 100000, 1000000};
 	const int max = sizeof(T) / sizeof(unsigned int) - 1;
 	unsigned int i, k;
 	size_t nodes_count = net.state().size();
@@ -91,10 +94,11 @@ int dev_find_attractor(network& net) {
 	int attractor_found_on = 0;
 	// Synchronizing CPU and GPU after each kernel invokation (update_state) is very expensive
 	// So we run (check_state_each) iterations, and then check if attractor was found
-	int check_state_each = 25;
+	// check_state_each must be less than T[k] for all k (will fix later)
+	int check_state_each = 90;
 	thrust::device_vector<bool> dev_eq_to_ref(check_state_each + 1);
-	thrust::fill(dev_eq_to_ref.begin(), dev_eq_to_ref.end(), true);
-	dev_eq_to_ref[0] = false;
+	clear_eq_to_ref(dev_eq_to_ref);
+
 	for(i = 1, k = 0; i < T[max]; ++i){
 		int* xs_ptr = thrust::raw_pointer_cast(xs.data());
 		int* ys_ptr = thrust::raw_pointer_cast(ys.data());
@@ -115,72 +119,30 @@ int dev_find_attractor(network& net) {
 
 		xs.swap(ys);
 
-		cudaDeviceSynchronize();
-
-		if(i % check_state_each == 0) { // 123425
-			thrust::device_vector<bool>::iterator eq_to_ref_on = thrust::find(dev_eq_to_ref.begin(), dev_eq_to_ref.end(), true);
-			if(eq_to_ref_on != dev_eq_to_ref.end()) {
-				attractor_found_on = ((i - 1) / check_state_each) * check_state_each + thrust::distance(dev_eq_to_ref.begin(), eq_to_ref_on) + 1;
+		if(i % check_state_each == 0) {
+			int relative_to = ((i - 1) / check_state_each) * check_state_each;
+			attractor_found_on = equal_to_reference_on_iteration(dev_eq_to_ref, relative_to);
+			if(attractor_found_on > 0) {
+				break;
 			}
-			thrust::fill(dev_eq_to_ref.begin(), dev_eq_to_ref.end(), true);
-			dev_eq_to_ref[0] = false;
+			clear_eq_to_ref(dev_eq_to_ref);
+			cudaDeviceSynchronize();
 		}
-		if(attractor_found_on > 0) {
-			break;
-		}
-
-		std::cout << "iteration " << i << ": " << std::endl;
-
-		std::cout << " State[i]: ";
-		thrust::host_vector<int> state = xs;
-		for(size_t j = 0; j < state.size(); ++j) {
-			std::cout << state[j] << " ";
-		}
-		std::cout << std::endl;
-
-		std::cout << " State[0]: ";
-		thrust::host_vector<int> st0 = state0;
-		for(size_t j = 0; j < st0.size(); ++j) {
-			std::cout << st0[j] << " ";
-		}
-		std::cout << std::endl;
-
-		thrust::host_vector<bool> etr = dev_eq_to_ref;
-		int asd = ((i - 1) % check_state_each + 1);
-		std::cout << "etr[" << asd << "](" << etr[asd] << "): ";
-		for(size_t j = 0; j < etr.size(); ++j) {
-			std::cout << etr[j] << " ";
-		}
-		std::cout << std::endl;
-
-		std::cout << " Behavior: ";
-		thrust::host_vector<node_behavior> behavior = dev_behavior;
-		for(size_t j = 0; j < behavior.size(); ++j) {
-			std::cout << behavior[j].changes << " ";
-		}
-		std::cout << std::endl;
-		std::cin >> etr[0];
 
 		if(i == T[k]){
 			++k;
-			//cout << "ts";
 			state0 = xs;
-			thrust::fill(dev_behavior.begin(), dev_behavior.end(), node_behavior());
+			clear_behavior(dev_behavior);
 		}
 	}
-	
-	thrust::host_vector<int> state1 = xs;
-	net.state() = std::vector<int>(state1.begin(), state1.end());
-	
-	thrust::host_vector<node_behavior> behavior = dev_behavior;
-	net.behavior() = std::vector<node_behavior>(behavior.begin(), behavior.end());
+
+	get_results_from_gpu(xs, dev_behavior, net);
 
 	if(attractor_found_on == 0){
 		std::cout << "koniec";// << std::endl;
 		return T[max] - T[max - 1];
 	}
 	else if(k > 0) {
-		std::cout << "On " << attractor_found_on << " ";
 		return attractor_found_on - T[k-1];
 	}
 	else return attractor_found_on;
