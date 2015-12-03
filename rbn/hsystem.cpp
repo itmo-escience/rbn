@@ -298,10 +298,10 @@ int hsystem::find_attractor(void){
 		std::cout << e.what();
 	}
 	this->T = length;
-	std::cout << this->T << std::endl;
+	//std::cout << "gpu: " << this->T << std::endl;
 #else
 	//static std::ofstream times_file = get_times_file("cpu", all.size());
-	unsigned int T[] = {100, 1000, 10000, 100000};
+	unsigned int T[] = {100, 1000, 10000, 100000, 1000000};
 	const int max = sizeof(T) / sizeof(unsigned int) - 1;
 	unsigned int i, j, k;
 	//nodes_it it;
@@ -311,7 +311,7 @@ int hsystem::find_attractor(void){
 		state1.push_back(ints() );
 	}
 
-	for(i = 1, k = 0; i < 100000/*T[max]*/; ++i){
+	for(i = 1, k = 0; i < T[max]; ++i){
 		for(j = 0; j < nets.size(); ++j){
 			//cout << (*nets[j]);
 			nets[j]->update_state();
@@ -346,7 +346,6 @@ int hsystem::find_attractor(void){
 	else if(k > 0) {
 		this->T = i - T[k-1];
 	}
-	std::cout << this->T << std::endl;
 #endif
 	return this->T;
 }
