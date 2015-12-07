@@ -225,7 +225,6 @@ void hsystem::generate_interconnections(int c){
 		int n = params.tot_incon / (S * (S-1)); //tyle conajmniej polaczen we bedzie miedzy dowolnymi dwoma sieciami (relacji jednostronnej)
 
 		//cout << "netssize: " << nets.size() << endl << (*nets[0]) << (*nets[1]) << endl;
-
 		for(int i = 0; i < params.network_count; ++i){
 
 			for(int j = 0; j < params.network_count; ++j){
@@ -266,10 +265,12 @@ void hsystem::generate_interconnections(int c){
 			if(f2 == f1)
 				++f2;
 			//losuje wezel z tej sieci
-			int nr = rand->next_int(0, params.get_network_size(f2) - 1);
+			//int nr = rand->next_int(0, params.get_network_size(f2) - 1);
+
+			//std::cout << f1 << "(" << n1->get_code() << ") >> " << f2 << "(" << nr << ")" << std::endl;
 
 			try{
-				nets[f2]->set_connection(nr, n1);
+				nets[f2]->set_connection(/*nr, */n1);
 				++w;
 				error = 0;
 			}catch(const char*){
@@ -290,7 +291,7 @@ void hsystem::generate_interconnections(int c){
 
 int hsystem::find_attractor(void){
 	clock_t time = clock();
-#ifdef ENABLE_GPU_ACCELERATION
+#ifndef ENABLE_GPU_ACCELERATION
 	int length = 0;
 	try {
 		length = gpu_acc::find_attractor(all);

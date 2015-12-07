@@ -130,7 +130,7 @@ void network::set_connection(int node_code, node_ptr n){ //nowym wejsciem wezla 
 	it = n_all.find(hlp);
 
 	(*it)->add_in_connection(n);
-	(*it)->update_boolean_functions(); //@kkirka
+	(*it)->update_boolean_functions();
 }
 
 void network::set_connection(node_ptr n){ //nowym wejsciem jednego z wezlow sieci staje sie wezel node
@@ -140,7 +140,7 @@ void network::set_connection(node_ptr n){ //nowym wejsciem jednego z wezlow siec
 	advance(it, nr);
 
 	(*it)->add_in_connection(n);
-	(*it)->update_boolean_functions(); //@kkirka
+	(*it)->update_boolean_functions();
 }
 
 node_ptr network::get_random_node(){ //losuje wezel
