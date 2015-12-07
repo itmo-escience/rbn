@@ -291,7 +291,7 @@ void hsystem::generate_interconnections(int c){
 
 int hsystem::find_attractor(void){
 	clock_t time = clock();
-#ifndef ENABLE_GPU_ACCELERATION
+#ifdef ENABLE_GPU_ACCELERATION
 	int length = 0;
 	try {
 		length = gpu_acc::find_attractor(all);
