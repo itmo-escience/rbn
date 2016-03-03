@@ -68,6 +68,11 @@ void handler::reset_vectors(){
 	//d_pajek_structure.push_back("");
 }
 
+#include <fstream>
+#include <sstream>
+#include <ctime>
+#include <string>
+
 void handler::work(){
 	ints hk, hkout;
 	doubles hi, hc;
@@ -100,7 +105,6 @@ void handler::work(){
 		}
 
 		if(params.rbn_version == 4){
-
 			if(params.scheme == 1) {//HARBN where interlinks are updated.
 				max = 3;
 			}

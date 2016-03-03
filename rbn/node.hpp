@@ -15,24 +15,22 @@
 #include <iomanip>      // std::setprecision
 #include "boolean_functions.hpp"
 #include "my_random.hpp"
-#include "node_fwd.hpp"
 
-#ifdef ENABLE_GPU_ACCELERATION
-	#include "gpu_acc/dev_network_fwd.hpp"
-#endif
+class node;
+class boolean_functions;
+typedef boost::shared_ptr<node> node_ptr;
 
 typedef std::set<node_ptr> nodes;
 typedef std::set<node_ptr>::iterator nodes_it;
 typedef boost::shared_ptr<boolean_functions> funs_ptr;
-typedef std::vector<int > ints;
+typedef std::vector<int> ints;
 typedef std::vector<double> doubles;
+
+#include <iostream>
 
 //class representing node
 class node {
 public:
-	#ifdef ENABLE_GPU_ACCELERATION
-		friend struct gpu_acc::network;
-	#endif
 	node(int code_, nodes& all_, double alpha_ = 0.0);
 	node(nodes& all_, int state = 0, double alpha_ = 0.0);
 	~node();// {if(p) std::cout << "destroying node nr: " << code << std::endl;}
@@ -44,6 +42,8 @@ public:
 	void update_e_in(); //updates field e_in_all
 	double decrease_e_in_fun(double) const; //function used to decrease e_in value in next epoch. NOT WORKING!!!
 	void update_distr_vision(bool addlink = true);//updates field distr_vision
+	void clear_vision() { vision.clear(); doubles().swap(distr_vision); } //clears set and vector to decrease system space
+	void clear_e_in_all() { doubles().swap(e_in_all); } //clears set and vector to decrease system space
 
 	//void set_out_connections(int Kout_); //ustawia polaczenia wyjsciowe
 	int set_in_connections(int Kin_); //sets in connections, returns 0 on success, -1 on failure
@@ -66,8 +66,10 @@ public:
 
 //changing/updating states functions
 	void update_state(); //aktualizacja stanow na podstawie wejsc
-	void update_state_old();
+	void update_state_old() { state_old = state; }
 	void set_state(int k) {state = k; state_old = k;}
+	void set_sum(int s) {sum = s;}
+	void set_changes(int s) {changes = s;}
 	void clear_sum(void) { sum = 0; changes = 0;}
 
 	double calc_CC(); //calculate clustering coefficient
@@ -89,6 +91,7 @@ public:
 	double get_CC() const {return CC;}
 	nodes get_input() ;
 	nodes get_output() {return output;}
+	funs_ptr get_boolean_functions() { return funs; }
 
 	double get_e_in(const node_ptr&) const; //returns e_in to connecting to this node
 	double get_e_in(const int) const; //returns e_in to connecting to the node of givent int code

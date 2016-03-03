@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <ctime>
 
-#ifdef ENABLE_GPU_ACCELERATION
-	#include "gpu_acc/find_attractor.hpp"
+#ifdef ENABLE_PARALLEL
+#include "gpu/converter.hpp"
 #endif
 
 hsystem::hsystem(){
@@ -107,6 +107,9 @@ void hsystem::generate_hnetwork(int nets_nr, ints Kins_){
 	for(; it != end; ++it){
 		(*it)->update_vision();
 		(*it)->calc_CC();
+		(*it)->clear_vision();
+		(*it)->update_boolean_functions();
+		//(*it)->clear_e_in_all();
 	}
 /*
 	//updating nodes' field vision
@@ -225,7 +228,6 @@ void hsystem::generate_interconnections(int c){
 		int n = params.tot_incon / (S * (S-1)); //tyle conajmniej polaczen we bedzie miedzy dowolnymi dwoma sieciami (relacji jednostronnej)
 
 		//cout << "netssize: " << nets.size() << endl << (*nets[0]) << (*nets[1]) << endl;
-
 		for(int i = 0; i < params.network_count; ++i){
 
 			for(int j = 0; j < params.network_count; ++j){
@@ -266,10 +268,12 @@ void hsystem::generate_interconnections(int c){
 			if(f2 == f1)
 				++f2;
 			//losuje wezel z tej sieci
-			int nr = rand->next_int(0, params.get_network_size(f2) - 1);
+			//int nr = rand->next_int(0, params.get_network_size(f2) - 1);
+
+			//std::cout << f1 << "(" << n1->get_code() << ") >> " << f2 << "(" << nr << ")" << std::endl;
 
 			try{
-				nets[f2]->set_connection(nr, n1);
+				nets[f2]->set_connection(/*nr, */n1);
 				++w;
 				error = 0;
 			}catch(const char*){
@@ -288,25 +292,14 @@ void hsystem::generate_interconnections(int c){
 	//cout << (*nets[0]) << endl << (*nets[1]) << endl;
 }
 
-std::ofstream get_times_file(const std::string& worker, int nodes_count) {
-	std::stringstream ss;
-	ss << worker << "_1M_times_" << nodes_count << ".txt";
-	return std::ofstream (ss.str());
-}
-
-int hsystem::find_attractor(void){
-	clock_t time = clock();
-#ifdef ENABLE_GPU_ACCELERATION
-	std::cout << "GPU" << std::endl;
-	static std::ofstream times_file = get_times_file("gpu", all.size());
-	int length = 0;
-	try {
-		length = gpu_acc::find_attractor(all);
-	} catch(std::runtime_error& e) {
-		std::cout << e.what();
-	}
-	this->T = length;
-	std::cout << this->T << std::endl;
+int hsystem::find_attractor(void) {
+#ifdef ENABLE_PARALLEL
+	gpu::rbn rbn = gpu::converter::make_rbn(*this);
+	gpu::state gpu_state = gpu::converter::get_state(*this);
+	gpu::attractor_info ai = rbn.find_attractor(gpu_state);
+	gpu::converter::update_original_network(ai, *this);
+	T = ai.length;
+	it = ai.length + ai.transient;
 #else
 	//static std::ofstream times_file = get_times_file("cpu", all.size());
 	unsigned int T[] = {100, 1000, 10000, 100000};
@@ -319,7 +312,7 @@ int hsystem::find_attractor(void){
 		state1.push_back(ints() );
 	}
 
-	for(i = 1, k = 0; i < 100000/*T[max]*/; ++i){
+	for(i = 1, k = 0; i < T[max]; ++i){
 		for(j = 0; j < nets.size(); ++j){
 			//cout << (*nets[j]);
 			nets[j]->update_state();
@@ -327,7 +320,7 @@ int hsystem::find_attractor(void){
 			state1[j] = nets[j]->get_network_state();
 		}
 
-		for(j = 0; j < nets.size(); ++j){
+		for(j = 0; j < nets.size(); ++j) {
 			nets[j]->update_state_old();
 		}
 
@@ -354,10 +347,24 @@ int hsystem::find_attractor(void){
 	else if(k > 0) {
 		this->T = i - T[k-1];
 	}
-	std::cout << this->T << std::endl;
+	/*nodes::const_iterator it = nets[0]->get_n_all().begin();
+	std::advance(it, 10);
+	if(gpu_sum != (*it)->get_sum()) {
+		std::cout << gpu_sum << " != " << (*it)->get_sum() << std::endl;
+	}*/
+	std::cout << "CPU changes:" << std::endl;
+	/*int iii = 0;
+	for(nodes::iterator pnode = all.begin(); pnode != all.end(); ++pnode, ++iii){
+		(*pnode)->get_changes();
+		if((*pnode)->get_changes() != ai.changes[iii] || (*pnode)->get_sum() != ai.sum[iii]) {
+			std::cout << "Oups" << std::endl;
+			std::cin >> j;
+			break;
+		}
+	}*/
+	std::cout << std::endl;
+	std::cout << "CPU T: " << this->T << std::endl;
 #endif
-	times_file << ((float) clock() - time)/CLOCKS_PER_SEC << ", ";
-	times_file.flush();
 	return this->T;
 }
 

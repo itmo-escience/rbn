@@ -8,10 +8,6 @@
 #include "node.hpp"
 #include "my_random.hpp"
 
-#ifdef ENABLE_GPU_ACCELERATION
-	#include "gpu_acc/dev_network_fwd.hpp"
-#endif
-
 class node;
 typedef boost::shared_ptr<node> node_ptr;
 typedef std::set<node_ptr> nodes;
@@ -36,9 +32,6 @@ This class works if the Kin is not bigger than 28.
 
 class boolean_functions{
 public:
-	#ifdef ENABLE_GPU_ACCELERATION
-		friend struct gpu_acc::network;
-	#endif
 /* constructor
 p - probability of generating ones,
 con - number of connections

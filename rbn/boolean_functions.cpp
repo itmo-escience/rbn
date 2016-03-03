@@ -39,8 +39,8 @@ const int boolean_functions::get_value(int* inputs){
 const int boolean_functions::get_value(const nodes& inputs){
 	int i, sum = 0, mul = 1, c;
 	nodes_it it = inputs.begin(), end = inputs.end();
-	//if(connections != inputs.size())
-	//	cout << "aha";
+	if(connections != inputs.size())
+		cout << "aha";
 	for(i = connections; i > 0; --i, ++it){
 		if(it == end)
 			std::cout << "akuku";

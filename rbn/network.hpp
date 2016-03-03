@@ -36,7 +36,7 @@ public:
 	void set_alpha(doubles alpha_); //ustawia parametry alpha
 	void set_alpha(doubles alpha_, doubles prop); //ustawia parametry alpha i alpha_prop
 	void set_connection(int node_code, node_ptr node); //nowym wejsciem wezla o kodzie node_code staje sie wezel node
-	void set_connection(node_ptr node); //nowym wejsciem jednego z wezlow sieci staje sie wezel node
+	int set_connection(node_ptr node); //nowym wejsciem jednego z wezlow sieci staje sie wezel node
 
 	node_ptr get_random_node(); //losuje wezel
 

@@ -16,7 +16,6 @@ using namespace std;
 //command arg: 40 2 1 0.5 0.5 0.6 1 1000 addon 1
 //
 int main(int argc, char* argv[]){
-
 	ints levels;
 	doubles p_ch;
 	int repetitions, iterations;

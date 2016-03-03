@@ -76,6 +76,8 @@ void network::generate_structure(int Kin_){ //generate initial connections
 	for(int i = 0; i < N; ++i, ++it){
 		(*it)->set_in_connections(Kin_);
 		(*it)->create_boolean_functions();
+		(*it)->clear_vision();
+		//(*it)->clear_e_in_all();
 	}
 #ifndef FOUT
 	cout << "Generated in-connections." << std::endl;
@@ -130,17 +132,15 @@ void network::set_connection(int node_code, node_ptr n){ //nowym wejsciem wezla 
 	it = n_all.find(hlp);
 
 	(*it)->add_in_connection(n);
-	(*it)->update_boolean_functions(); //@kkirka
 }
 
-void network::set_connection(node_ptr n){ //nowym wejsciem jednego z wezlow sieci staje sie wezel node
+int network::set_connection(node_ptr n){ //nowym wejsciem jednego z wezlow sieci staje sie wezel node
 	int nr = rand->next_int(0, n_all.size()-1);
 	nodes_it it = n_all.begin();
 
 	advance(it, nr);
 
-	(*it)->add_in_connection(n);
-	(*it)->update_boolean_functions(); //@kkirka
+	return (*it)->add_in_connection(n);
 }
 
 node_ptr network::get_random_node(){ //losuje wezel
@@ -153,16 +153,14 @@ node_ptr network::get_random_node(){ //losuje wezel
 }
 
 void network::update_state(void){
-	nodes_it it;
-	it = n_all.begin();
+	nodes_it it = n_all.begin();
 	for(int j = 0; j < N; ++j, ++it){
 		(*it)->update_state(); //aktualizacja stanow wezlow
 	}
 }
 
 void network::update_state_old(void){
-	nodes_it it;
-	it = n_all.begin();
+	nodes_it it = n_all.begin();
 	for(int j = 0; j < N; ++j, ++it){
 		(*it)->update_state_old();
 	}
@@ -249,6 +247,8 @@ void network::update_connection(void){
 		//cout << "wylosowano: " << nr << std::endl;
 		advance(it, nr);
 
+		(*it)->update_vision();
+
 		double av_act;
 		if (T==0)
 			av_act = 1;
@@ -293,6 +293,7 @@ void network::update_connection(void){
 			if ((*it)->remove_in_connections(1) == -1)
 				continue; //not succeeded. This node can't have any edge removed.
 		}
+		(*it)->clear_vision();
 		break;
 	}
 
