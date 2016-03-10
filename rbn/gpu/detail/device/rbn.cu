@@ -5,7 +5,11 @@
 #include <thrust/equal.h>
 #include <thrust/copy.h>
 
-#include "knuth_attractor_finder.hpp"
+#ifdef KNUTH
+    #include "knuth_attractor_finder.hpp"
+#else
+    #include "liu_bassler_attractor_finder.hpp"
+#endif
 
 namespace gpu {
 
@@ -28,7 +32,11 @@ rbn::rbn(const host::structure& structure, const host::boolean_functions& bfs)
 
 attractor_info rbn::find_attractor(host::state& xs) const {
     state device_xs(xs.begin(), xs.end());
+#ifdef KNUTH
     attractor_info ai = knuth_find_attractor(*this, device_xs);
+#else
+    attractor_info ai = liu_bassler_find_attractor(*this, device_xs);
+#endif
     thrust::copy(device_xs.begin(), device_xs.end(), xs.begin());
     return ai;
 }

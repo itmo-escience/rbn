@@ -23,6 +23,7 @@ set(CUDA_NVCC_FLAGS -arch=compute_13)
 set(CUDA_SOURCE_FILES
         gpu/detail/device/boolean_functions.cu
         gpu/detail/device/knuth_attractor_finder.cu
+        gpu/detail/device/liu_bassler_attractor_finder.cu
         gpu/rbn.cu
         gpu/detail/device/rbn.cu
    )

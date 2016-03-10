@@ -124,7 +124,7 @@ void rbn::get_next_state
 		) const
 {
 	next_state_kernel <<< static_cast<int>(size()) / 256 + 1, 256 >>>
-        ( m_structure.height()
+        ( size()
         , m_boolean_functions.max_kin()
         , thrust::raw_pointer_cast(m_structure.row_ptrs().data())
         , thrust::raw_pointer_cast(m_structure.col_indexes().data())

@@ -1,8 +1,23 @@
-//
-// Created by kkuvshinov on 03.03.16.
-//
+#ifndef GPU__DETAIL__DEVICE__LIU_BASSLER_ATTRACTOR_FINDER
+#define GPU__DETAIL__DEVICE__LIU_BASSLER_ATTRACTOR_FINDER
 
-#ifndef RBN_LIU_BASSLER_ATTRACTOR_FINDER_HPP
-#define RBN_LIU_BASSLER_ATTRACTOR_FINDER_HPP
+#include "../../attractor_info.hpp"
+#include "state.hpp"
 
-#endif //RBN_LIU_BASSLER_ATTRACTOR_FINDER_HPP
+namespace gpu {
+
+namespace detail {
+
+namespace device {
+
+struct rbn;
+
+attractor_info liu_bassler_find_attractor(const rbn& net, state& xs);
+
+} // namespace device
+
+} // namespace detail
+
+} // namespace gpu
+
+#endif //GPU__DETAIL__DEVICE__LIU_BASSLER_ATTRACTOR_FINDER

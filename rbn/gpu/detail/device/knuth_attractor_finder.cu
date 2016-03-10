@@ -14,6 +14,7 @@ namespace detail {
 
 namespace device {
 
+namespace {
 
 template<int M>
 struct behavior_collector {
@@ -72,6 +73,7 @@ struct always {
 	}
 };
 
+} // namespace
 
 struct knuth_attractor_finder {
 	knuth_attractor_finder(const rbn& net, size_t iterations_limit);
