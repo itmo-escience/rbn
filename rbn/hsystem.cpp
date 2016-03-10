@@ -301,11 +301,9 @@ int hsystem::find_attractor(void) {
 	T = ai.length;
 	it = ai.length + ai.transient;
 #else
-	//static std::ofstream times_file = get_times_file("cpu", all.size());
 	unsigned int T[] = {100, 1000, 10000, 100000};
 	const int max = sizeof(T) / sizeof(unsigned int) - 1;
 	unsigned int i, j, k;
-	//nodes_it it;
 
 	ints2 state0 = state, state1;
 	for(j = 0; j < nets.size(); ++j){
@@ -347,23 +345,6 @@ int hsystem::find_attractor(void) {
 	else if(k > 0) {
 		this->T = i - T[k-1];
 	}
-	/*nodes::const_iterator it = nets[0]->get_n_all().begin();
-	std::advance(it, 10);
-	if(gpu_sum != (*it)->get_sum()) {
-		std::cout << gpu_sum << " != " << (*it)->get_sum() << std::endl;
-	}*/
-	std::cout << "CPU changes:" << std::endl;
-	/*int iii = 0;
-	for(nodes::iterator pnode = all.begin(); pnode != all.end(); ++pnode, ++iii){
-		(*pnode)->get_changes();
-		if((*pnode)->get_changes() != ai.changes[iii] || (*pnode)->get_sum() != ai.sum[iii]) {
-			std::cout << "Oups" << std::endl;
-			std::cin >> j;
-			break;
-		}
-	}*/
-	std::cout << std::endl;
-	std::cout << "CPU T: " << this->T << std::endl;
 #endif
 	return this->T;
 }

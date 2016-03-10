@@ -33,24 +33,6 @@ attractor_info rbn::find_attractor(host::state& xs) const {
     return ai;
 }
 
-void rbn::print_structure(std::ostream& os) const {
-    os << "Structure {" << std::endl;
-    const structure& s = m_structure;
-    os << "NNZ: ";
-    std::copy(s.values().begin(), s.values().end(), std::ostream_iterator<int>(os, " "));
-    os << std::endl;
-    os << "IA: ";
-    std::copy(s.row_ptrs().begin(), s.row_ptrs().end(), std::ostream_iterator<int>(os, " "));
-    std::cout << std::endl;
-    os << "JA: ";
-    std::copy(s.col_indexes().begin(), s.col_indexes().end(), std::ostream_iterator<int>(os, " "));
-    thrust::host_vector<int> bfs = m_boolean_functions.data();
-    os << std::endl;
-    os << "JA: ";
-    std::copy(bfs.begin(), bfs.end(), std::ostream_iterator<int>(os, " "));
-    os << std::endl;
-}
-
 } // namespace device
 
 } // namespace detail
