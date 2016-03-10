@@ -23,6 +23,8 @@ class pitched_circular_matrix {
 public:
 	pitched_circular_matrix(size_t width, size_t height);
 	~pitched_circular_matrix();
+	thrust::device_ptr<T> data() { return m_storage; };
+	thrust::device_ptr<const T> data() const { return m_storage; };
 	thrust::device_ptr<T> operator[] (ptrdiff_t row);
 	thrust::device_reference<T> operator() (ptrdiff_t row, ptrdiff_t col);
 	thrust::device_ptr<const T> operator[] (ptrdiff_t row) const;
@@ -44,7 +46,7 @@ pitched_circular_matrix<T>::pitched_circular_matrix(size_t width, size_t height)
 	, m_storage()
 {
 	T* ptr = 0;
-	cudaMallocPitch((void**) &ptr, &m_pitch, m_width * sizeof(T), m_height);
+	cudaError_t err = cudaMallocPitch((void**) &ptr, &m_pitch, m_width * sizeof(T), m_height);
 	m_storage = thrust::device_ptr<T>(ptr);
 }
 

@@ -11,12 +11,9 @@ rbn::~rbn() {
 	delete m_pimpl;
 }
 
-attractor_info rbn::find_attractor(detail::host::state& state/*, size_t iterations_limit*/) {
-	return m_pimpl->find_attractor(state);
+attractor_info rbn::find_attractor(detail::host::state& state, size_t max_attractor_length, hparams::algorithm algorithm) {
+	return m_pimpl->find_attractor(state, max_attractor_length, algorithm);
 }
 
-void rbn::print_structure(std::ostream& os) const {
-    m_pimpl->print_structure(os);
-}
 
 } // namespace gpu

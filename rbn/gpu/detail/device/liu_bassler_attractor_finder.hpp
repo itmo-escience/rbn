@@ -12,7 +12,7 @@ namespace device {
 
 struct rbn;
 
-attractor_info liu_bassler_find_attractor(const rbn& net, state& xs);
+attractor_info liu_bassler_find_attractor(const rbn& net, state& xs, size_t max_attractor_length);
 
 } // namespace device
 

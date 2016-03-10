@@ -73,8 +73,6 @@ struct always {
 	}
 };
 
-} // namespace
-
 struct knuth_attractor_finder {
 	knuth_attractor_finder(const rbn& net, size_t iterations_limit);
 
@@ -110,17 +108,6 @@ knuth_attractor_finder::knuth_attractor_finder(const rbn& net, size_t iterations
         , m_changes(m_net.size(), 0)
 { }
 
-
-void dump_pitched(const pitched_circular_matrix<int>& pm) {
-	for (size_t j = 1u; j <= pm.height(); ++j) {
-		for (size_t l = 0u; l < pm.width(); ++l) {
-			int st = pm(j, l);;
-			std::cout << st;
-		}
-		std::cout << std::endl;
-	}
-}
-
 void knuth_attractor_finder::advance_fast_state
         ( int iteration, const equal_to_ref_array& equal_to_ref
         , behavior_collector<+1>& add_sum_and_changes)
@@ -143,8 +130,6 @@ void knuth_attractor_finder::advance_fast_state
 			// Same as the above
 			, if_not(equal_to_ref.on_previous_iteration(iteration)), add_sum_and_changes, skip_comparison()
 	);
-	//std::cout << "fst = " << std::endl;
-	//dump_pitched(m_fast_states);
 }
 
 
@@ -163,12 +148,6 @@ void knuth_attractor_finder::advance_slow_state
 			, compare_states(equal_to_ref.on_current_iteration(iteration), compare_to)
 	);
 }
-
-
-int get_iteration_number(int i, int k, int r) {
-	return (i / r) * r + k;
-}
-
 
 int knuth_attractor_finder::find_attractor_multiple(const state& state_0, state& state_n) {
     thrust::copy(state_0.begin(), state_0.end(), m_slow_states[0]);
@@ -282,8 +261,10 @@ attractor_info knuth_attractor_finder::operator()(state& xs) {
 }
 
 
-attractor_info knuth_find_attractor(const rbn& net, state& xs) {
-	return knuth_attractor_finder(net, 10u*1000000u)(xs);
+} // namespace
+
+attractor_info knuth_find_attractor(const rbn& net, state& xs, size_t max_attractor_length) {
+	return knuth_attractor_finder(net, max_attractor_length)(xs);
 }
 
 

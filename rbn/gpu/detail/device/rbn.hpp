@@ -4,7 +4,8 @@
 #include <thrust/device_ptr.h>
 #include <ostream>
 
-#include "rbn.hpp"
+#include "../../../hparams.hpp"
+
 #include "boolean_functions.hpp"
 #include "structure.hpp"
 #include "state.hpp"
@@ -60,7 +61,7 @@ struct skip_comparison {
 struct rbn {
 	rbn(const host::structure& structure, const host::boolean_functions& bfs);
 
-	attractor_info find_attractor(host::state& state) const;
+	attractor_info find_attractor(host::state& state, size_t max_attractor_length, hparams::algorithm algorithm) const;
 
 	size_t size() const { return m_structure.width(); }
 
@@ -69,8 +70,6 @@ struct rbn {
 						BehaviorInformationCollector collector = skip_behavior_information_collection(),
 						Comparator comparator = skip_comparison()
 	) const;
-
-    void print_structure(std::ostream& os) const;
 
 private:
 	structure m_structure;

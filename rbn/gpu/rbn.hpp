@@ -3,6 +3,8 @@
 
 #include <ostream>
 
+#include "../hparams.hpp"
+
 #include "detail/host/state.hpp"
 #include "detail/host/structure.hpp"
 #include "detail/host/boolean_functions.hpp"
@@ -39,7 +41,7 @@ namespace detail {
 struct rbn {
     rbn(const detail::host::structure& structure, const detail::host::boolean_functions& bfs);
     ~rbn();
-	attractor_info find_attractor(detail::host::state& state/*, size_t iterations_limit*/);
+	attractor_info find_attractor(detail::host::state& state, size_t max_attractor_length, hparams::algorithm algorithm);
     void print_structure(std::ostream& os) const;
 
 private:

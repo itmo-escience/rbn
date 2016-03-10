@@ -24,7 +24,12 @@ void hsystem::generate_nodes(int N){//generates nodes
 	for(int i = 0; i < N; ++i){
 		int k = rand->next_int(1);
 		node_ptr ptr = node_ptr(new node(all, k, 0));
-		ptr->set_shared_from_this(ptr);		ptr->set_preferential(params.link_update);
+		ptr->set_shared_from_this(ptr);
+		if(params.rbn_version != 1) {
+			ptr->set_preferential(params.link_update);
+		} else {
+			ptr->set_preferential(0);
+		}
 		double p_ch = params.ini_p - 0.5;
 		ptr->update_p(p_ch);
 
@@ -296,7 +301,7 @@ int hsystem::find_attractor(void) {
 #ifdef ENABLE_PARALLEL
 	gpu::rbn rbn = gpu::converter::make_rbn(*this);
 	gpu::state gpu_state = gpu::converter::get_state(*this);
-	gpu::attractor_info ai = rbn.find_attractor(gpu_state);
+	gpu::attractor_info ai = rbn.find_attractor(gpu_state, params.max_attractor_length, params.attractor_finding_algorithm);
 	gpu::converter::update_original_network(ai, *this);
 	T = ai.length;
 	it = ai.length + ai.transient;

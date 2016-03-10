@@ -67,15 +67,6 @@ private:
     const bool* m_var;
 };
 
-struct always {
-    __device__
-    bool operator()() {
-        return true;
-    }
-};
-
-}
-
 struct liu_bassler_attractor_finder {
     liu_bassler_attractor_finder(const rbn& net, size_t iterations_limit);
 
@@ -83,7 +74,7 @@ struct liu_bassler_attractor_finder {
 
 private:
     const rbn& m_net;
-    size_t m_state_buffer_size;
+    const size_t m_state_buffer_size;
     size_t m_iterations_limit;
     std::vector<size_t> m_thresholds;
     state m_reference_state;
@@ -95,7 +86,7 @@ private:
 
 liu_bassler_attractor_finder::liu_bassler_attractor_finder(const rbn& net, size_t iterations_limit)
         : m_net(net)
-        , m_state_buffer_size(99u)
+        , m_state_buffer_size(3u)
         , m_iterations_limit(iterations_limit)
         , m_thresholds()
         , m_reference_state(m_net.size(), 0)
@@ -107,6 +98,7 @@ liu_bassler_attractor_finder::liu_bassler_attractor_finder(const rbn& net, size_
         m_thresholds.push_back(i);
         m_thresholds.push_back(2u * i);
     }
+	assert(m_state_buffer_size < m_thresholds[0]);
 }
 
 attractor_info liu_bassler_attractor_finder::operator()(state& xs) {
@@ -116,11 +108,10 @@ attractor_info liu_bassler_attractor_finder::operator()(state& xs) {
     attractor.sum.resize(m_net.size());
 
     behavior_collector<+1> add_sum_and_changes(m_sum.data(), m_changes.data());
-
+	
     equal_to_ref_array equal_to_ref(m_state_buffer_size);
-    thrust::copy(xs.begin(), xs.end(), m_states[0]);
+	thrust::copy(xs.begin(), xs.end(), m_states.data());
     thrust::copy(xs.begin(), xs.end(), m_reference_state.begin());
-
     thrust::device_ptr<int> reference_state = m_reference_state.data();
 
     for (size_t i = 1, k = 0; i <= m_iterations_limit; ++i) {
@@ -133,9 +124,6 @@ attractor_info liu_bassler_attractor_finder::operator()(state& xs) {
                 , reference_state
                 )
             );
-        if(i % 100000 == 0) {
-            std::cout << i << std::endl;
-        }
         if (i == m_iterations_limit || i % m_state_buffer_size == 0) {
             attractor.length = equal_to_ref.find_first(i);
             if(attractor.length > 0) {
@@ -166,8 +154,11 @@ attractor_info liu_bassler_attractor_finder::operator()(state& xs) {
 }
 
 
-attractor_info liu_bassler_find_attractor(const rbn& net, state& xs) {
-    return liu_bassler_attractor_finder(net, 20u*1000000u)(xs);
+} // namespace
+
+
+attractor_info liu_bassler_find_attractor(const rbn& net, state& xs, size_t max_attractor_length) {
+    return liu_bassler_attractor_finder(net, 2u * max_attractor_length)(xs);
 }
 
 
