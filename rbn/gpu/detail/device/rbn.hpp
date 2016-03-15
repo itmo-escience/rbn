@@ -4,8 +4,6 @@
 #include <thrust/device_ptr.h>
 #include <ostream>
 
-#include "../../../hparams.hpp"
-
 #include "boolean_functions.hpp"
 #include "structure.hpp"
 #include "state.hpp"
@@ -61,7 +59,7 @@ struct skip_comparison {
 struct rbn {
 	rbn(const host::structure& structure, const host::boolean_functions& bfs);
 
-	attractor_info find_attractor(host::state& state, size_t max_attractor_length, hparams::algorithm algorithm) const;
+	attractor_info find_attractor(host::state& state, size_t max_attractor_length, bool use_knuth) const;
 
 	size_t size() const { return m_structure.width(); }
 
@@ -82,7 +80,8 @@ private:
 template<class When, class BehaviorInformationCollector, class Comparator>
 __global__
 void next_state_kernel
-		(int num_rows, int max_kin, const int* ptr       // These are
+		(int num_rows, int max_kin
+		, const int* ptr       // These are
 		, const int* indices   // the sparse matrix
 		, const int* data      // parameters
 		, const int* boolean_funcs

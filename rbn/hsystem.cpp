@@ -301,7 +301,7 @@ int hsystem::find_attractor(void) {
 #ifdef ENABLE_PARALLEL
 	gpu::rbn rbn = gpu::converter::make_rbn(*this);
 	gpu::state gpu_state = gpu::converter::get_state(*this);
-	gpu::attractor_info ai = rbn.find_attractor(gpu_state, params.max_attractor_length, params.attractor_finding_algorithm);
+	gpu::attractor_info ai = rbn.find_attractor(gpu_state, params.max_attractor_length, params.use_knuth);
 	gpu::converter::update_original_network(ai, *this);
 	T = ai.length;
 	it = ai.length + ai.transient;
@@ -365,7 +365,10 @@ void hsystem::iterate(void){
 			//cout << T ;//<< endl;
 		for(int i = 0; i < params.network_count; ++i){
 			nets[i]->set_period(T);
-			nets[i]->update_connection();
+            const size_t nodes_to_rewire = (nets[i]->get_n_all().size() - 1u) / 80u + 1u;
+            for(size_t u = 0; u < nodes_to_rewire; ++u) {
+                nets[i]->update_connection();
+            }
 		}
 	}
 	else if(params.rbn_version == 2){

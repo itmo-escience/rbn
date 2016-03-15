@@ -55,7 +55,7 @@ void hparams::initialize(std::string filename){
 	iterations = 1000;
 	repetitions = 1;
 	max_attractor_length = 100000;
-	attractor_finding_algorithm = hparams::algorithm::liu_bassler;
+	use_knuth = false;
 
 	scheme = 2;
 	initial_iterations = 200; //number of initial iterations in 2 simulation scheme (see readme file)
@@ -144,7 +144,7 @@ void hparams::read_from_file(std::string filename){
 			else if (sub == "algorithm") {
 				is >> sub;
 				if(sub == "knuth") {
-					attractor_finding_algorithm = hparams::algorithm::knuth;
+					use_knuth = true;
 				}
 				++i;
 				continue;

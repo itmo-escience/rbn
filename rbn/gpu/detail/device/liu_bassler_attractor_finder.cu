@@ -98,7 +98,7 @@ liu_bassler_attractor_finder::liu_bassler_attractor_finder(const rbn& net, size_
         m_thresholds.push_back(i);
         m_thresholds.push_back(2u * i);
     }
-	assert(m_state_buffer_size < m_thresholds[0]);
+	//assert(m_state_buffer_size < m_thresholds[0]);
 }
 
 attractor_info liu_bassler_attractor_finder::operator()(state& xs) {

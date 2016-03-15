@@ -11,8 +11,8 @@ rbn::~rbn() {
 	delete m_pimpl;
 }
 
-attractor_info rbn::find_attractor(detail::host::state& state, size_t max_attractor_length, hparams::algorithm algorithm) {
-	return m_pimpl->find_attractor(state, max_attractor_length, algorithm);
+attractor_info rbn::find_attractor(detail::host::state& state, size_t max_attractor_length, bool use_knuth) {
+	return m_pimpl->find_attractor(state, max_attractor_length, use_knuth);
 }
 
 

@@ -19,7 +19,6 @@ typedef map<string, doubles> map_str_dbl2;
 
 class hparams {
 public:
-	enum struct algorithm { knuth, liu_bassler };
 	hparams();
 	hparams(string filename);
 	hparams(ints levels_, doubles p_changes_);
@@ -84,7 +83,7 @@ public:
 	int initial_iterations; //number of initial iterations in 2 simulation scheme (see readme file)
 	int later_iterations; //number of iterations in 2 simulation scheme (see readme file)
 	unsigned int max_attractor_length;
-	algorithm attractor_finding_algorithm;
+	bool use_knuth;
 
 	//iteration management
 	int inform_after; //after how many informations should the user be informed about the progress
