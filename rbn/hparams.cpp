@@ -396,6 +396,10 @@ void hparams::read_from_file(std::string filename){
 	if (it != end)
 		max_attractor_length = (unsigned int)(it->second).at(0);
 
+	it = params.find("proportional");
+	if (it != end)
+		proportional = (bool)(it->second).at(0);
+
 	it = params.find("inform_after");
 	if(it != end)
 		inform_after = (int) (it->second).at(0);

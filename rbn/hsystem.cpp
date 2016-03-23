@@ -355,6 +355,7 @@ int hsystem::find_attractor(void) {
 }
 
 void hsystem::iterate(void){
+    clock_t t = clock();
 	if(params.rbn_version == 1){
 		for(int i = 0; i < params.network_count; ++i){
 			//nets[i]->iterate();
@@ -365,7 +366,10 @@ void hsystem::iterate(void){
 			//cout << T ;//<< endl;
 		for(int i = 0; i < params.network_count; ++i){
 			nets[i]->set_period(T);
-            const size_t nodes_to_rewire = (nets[i]->get_n_all().size() - 1u) / 80u + 1u;
+            size_t nodes_to_rewire = 1;
+			if(params.proportional) {
+				nodes_to_rewire = nets[i]->get_n_all().size() / 80u;
+			}
             for(size_t u = 0; u < nodes_to_rewire; ++u) {
                 nets[i]->update_connection();
             }
@@ -395,7 +399,10 @@ void hsystem::iterate(void){
 		}
 		//cout << " k ";
 	}
-
+    static std::ofstream file("time_per_epoch", std::ios::app);
+    t = clock() - t;
+    file << ((float)t)/CLOCKS_PER_SEC << std::endl;
+    file.flush();
 }
 
 ints2 hsystem::get_network_state(void){
