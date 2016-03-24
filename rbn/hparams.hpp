@@ -83,6 +83,8 @@ public:
 	int initial_iterations; //number of initial iterations in 2 simulation scheme (see readme file)
 	int later_iterations; //number of iterations in 2 simulation scheme (see readme file)
 	unsigned int max_attractor_length;
+	bool use_knuth;
+	bool proportional;
 
 	//iteration management
 	int inform_after; //after how many informations should the user be informed about the progress

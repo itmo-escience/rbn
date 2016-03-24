@@ -542,16 +542,13 @@ int node::remove_in_connection(const node_ptr& a){ //usuwa polaczenie wejsciowe 
 
 void node::update_state(){
 		state_old = state;
-
-		state = funs->get_value(input);
+		if(!input.empty()) {
+			state = funs->get_value(input);
+		}
 
 		sum += state;
 		if(state != state_old)
 			changes += 1;
-}
-
-void node::update_state_old(){
-		state_old = state;
 }
 
 double node::calc_CC(){ //calculate clustering coefficient

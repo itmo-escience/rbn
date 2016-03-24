@@ -4,7 +4,7 @@
 /**
  * This class represents the hierarchical network. It consists of small networks that connect with each other.
 */
-#include<iostream>
+#include <iostream>
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
@@ -46,6 +46,7 @@ public:
 	int get_count() const {return nets.size();}
 	nodes& get_all(unsigned int n);
 	nodes& get_all() {return all;}
+	const nodes& get_all() const {return all;}
 	long get_period() const {return T;}
 	long get_period(unsigned int n) const;
 	long get_basin() const {return it;}

@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <ctime>
 
-#ifdef ENABLE_GPU_ACCELERATION
-	#include "gpu_acc/find_attractor.hpp"
+#ifdef ENABLE_PARALLEL
+#include "gpu/converter.hpp"
 #endif
 
 hsystem::hsystem(){
@@ -24,7 +24,12 @@ void hsystem::generate_nodes(int N){//generates nodes
 	for(int i = 0; i < N; ++i){
 		int k = rand->next_int(1);
 		node_ptr ptr = node_ptr(new node(all, k, 0));
-		ptr->set_shared_from_this(ptr);		ptr->set_preferential(params.link_update);
+		ptr->set_shared_from_this(ptr);
+		if(params.rbn_version != 1) {
+			ptr->set_preferential(params.link_update);
+		} else {
+			ptr->set_preferential(0);
+		}
 		double p_ch = params.ini_p - 0.5;
 		ptr->update_p(p_ch);
 
@@ -107,6 +112,9 @@ void hsystem::generate_hnetwork(int nets_nr, ints Kins_){
 	for(; it != end; ++it){
 		(*it)->update_vision();
 		(*it)->calc_CC();
+		(*it)->clear_vision();
+		(*it)->update_boolean_functions();
+		//(*it)->clear_e_in_all();
 	}
 /*
 	//updating nodes' field vision
@@ -289,23 +297,18 @@ void hsystem::generate_interconnections(int c){
 	//cout << (*nets[0]) << endl << (*nets[1]) << endl;
 }
 
-int hsystem::find_attractor(void){
-	clock_t time = clock();
-#ifdef ENABLE_GPU_ACCELERATION
-	int length = 0;
-	try {
-		length = gpu_acc::find_attractor(all);
-	} catch(std::runtime_error& e) {
-		std::cout << e.what();
-	}
-	this->T = length;
-	//std::cout << "gpu: " << this->T << std::endl;
+int hsystem::find_attractor(void) {
+#ifdef ENABLE_PARALLEL
+	gpu::rbn rbn = gpu::converter::make_rbn(*this);
+	gpu::state gpu_state = gpu::converter::get_state(*this);
+	gpu::attractor_info ai = rbn.find_attractor(gpu_state, params.max_attractor_length, params.use_knuth);
+	gpu::converter::update_original_network(ai, *this);
+	T = ai.length;
+	it = ai.length + ai.transient;
 #else
-	//static std::ofstream times_file = get_times_file("cpu", all.size());
-	unsigned int T[] = {100, 1000, 10000, 100000, 1000000};
+	unsigned int T[] = {100, 1000, 10000, 100000};
 	const int max = sizeof(T) / sizeof(unsigned int) - 1;
 	unsigned int i, j, k;
-	//nodes_it it;
 
 	ints2 state0 = state, state1;
 	for(j = 0; j < nets.size(); ++j){
@@ -320,7 +323,7 @@ int hsystem::find_attractor(void){
 			state1[j] = nets[j]->get_network_state();
 		}
 
-		for(j = 0; j < nets.size(); ++j){
+		for(j = 0; j < nets.size(); ++j) {
 			nets[j]->update_state_old();
 		}
 
@@ -352,6 +355,7 @@ int hsystem::find_attractor(void){
 }
 
 void hsystem::iterate(void){
+    clock_t t = clock();
 	if(params.rbn_version == 1){
 		for(int i = 0; i < params.network_count; ++i){
 			//nets[i]->iterate();
@@ -362,7 +366,13 @@ void hsystem::iterate(void){
 			//cout << T ;//<< endl;
 		for(int i = 0; i < params.network_count; ++i){
 			nets[i]->set_period(T);
-			nets[i]->update_connection();
+            size_t nodes_to_rewire = 1;
+			if(params.proportional) {
+				nodes_to_rewire = nets[i]->get_n_all().size() / 80u;
+			}
+            for(size_t u = 0; u < nodes_to_rewire; ++u) {
+                nets[i]->update_connection();
+            }
 		}
 	}
 	else if(params.rbn_version == 2){
@@ -389,7 +399,10 @@ void hsystem::iterate(void){
 		}
 		//cout << " k ";
 	}
-
+    static std::ofstream file("time_per_epoch", std::ios::app);
+    t = clock() - t;
+    file << ((float)t)/CLOCKS_PER_SEC << std::endl;
+    file.flush();
 }
 
 ints2 hsystem::get_network_state(void){

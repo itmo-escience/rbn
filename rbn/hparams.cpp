@@ -55,6 +55,7 @@ void hparams::initialize(std::string filename){
 	iterations = 1000;
 	repetitions = 1;
 	max_attractor_length = 100000;
+	use_knuth = false;
 
 	scheme = 2;
 	initial_iterations = 200; //number of initial iterations in 2 simulation scheme (see readme file)
@@ -137,6 +138,14 @@ void hparams::read_from_file(std::string filename){
 				is >> sub;
 
 				structure = sub;
+				++i;
+				continue;
+			}
+			else if (sub == "algorithm") {
+				is >> sub;
+				if(sub == "knuth") {
+					use_knuth = true;
+				}
 				++i;
 				continue;
 			}
@@ -386,6 +395,10 @@ void hparams::read_from_file(std::string filename){
 	it = params.find("max_attractor_length");
 	if (it != end)
 		max_attractor_length = (unsigned int)(it->second).at(0);
+
+	it = params.find("proportional");
+	if (it != end)
+		proportional = (bool)(it->second).at(0);
 
 	it = params.find("inform_after");
 	if(it != end)
