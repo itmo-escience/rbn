@@ -5,6 +5,7 @@
 
 #include "node.hpp"
 #include "boolean_functions.hpp"
+#include "execution_policy.hpp"
 #include "my_random.hpp"
 
 #include "fluctuation.hpp" //there you need to comment in/out the line if you want to add p fluctuation. 
@@ -41,11 +42,18 @@ public:
 	node_ptr get_random_node(); //losuje wezel
 
 	void update_state(void); //aktualizuje stan sieci
+	void update_state(execution_policy::nested_openmp_parallel_tag);
+	template<class ExecutionPolicy> void update_state(ExecutionPolicy);
+
 	void update_state_old(void);
 	void clear_sum(void); //czysci sumy/zmian wszystkich wezlow
-	long find_attractor(void); //znajduje atraktor danej sieci i zwraca jego okres 
+	long find_attractor(void); //znajduje atraktor danej sieci i zwraca jego okres
+	template<class ExecutionPolicy> long find_attractor(ExecutionPolicy ep);
+
 	void update_connection(void); //updateituje na podstawie wyniku szukania atraktora
+	
 	void iterate(void); //iteracja sieci
+	template<class ExecutionPolicy> void iterate(ExecutionPolicy);
 
 	ints get_network_state(void); //zwraca stan sieci (wszystkich wezlow) jako liczba w kodzie dwojkowym
 	double get_Kin() const; //zraca srednie Kin
@@ -66,6 +74,7 @@ protected:
 	doubles alpha; //parameter of Changing Connections Rule. Zawiera tablice alf. Wezly moga przyjmowac rozne alfa. Poki co liczba wezlow przyjmujacych dane alfa jest z gory okreslona (nie jest zmienna losowa). To jaki procent wszystkich wezlow przyjmie dana alfa jest zapisane w zmiennej alpha_prop
 	doubles alpha_prop; //patrz wyzej
 	nodes n_all; //wezly
+	std::vector<node_ptr> n_all_vector;
 	my_random *rand;
 
 	long T; //okres atraktora
@@ -74,5 +83,7 @@ protected:
 
 //bool operator== (ints left, ints right);
 std::ostream& operator<<(std::ostream&, const  network&);
+
+#include "network.inl"
 
 #endif

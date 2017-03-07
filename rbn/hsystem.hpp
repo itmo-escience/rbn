@@ -34,7 +34,11 @@ public:
 	void generate_interconnections(int); //generuje polaczenia miedzysieciowe,
 
 	int find_attractor(void); //znajduje atraktor calej sieci
+	int find_attractor(execution_policy::gpu_tag);
+	template<class ExecutionPolicy> int find_attractor(ExecutionPolicy);
+	
 	void iterate(void); //iteracja sieci
+	template<class ExecutionPolicy> void iterate(ExecutionPolicy);
 
 	ints2 get_network_state(void); //zwraca stan calej sieci
 	ints get_network_state(unsigned int n); //zwraca stan czasteczki n (wszystkich wezlow)
@@ -59,6 +63,11 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const hsystem&);
 
 private:
+	void iterate_v2(void);
+	void iterate_v2(execution_policy::openmp_parallel_tag);
+	void iterate_v2(execution_policy::nested_openmp_parallel_tag);
+	template<class ExecutionPolicy>	void iterate_v2(ExecutionPolicy);
+
 	nodes all;
 	networks nets;
 	hparams params;
@@ -77,5 +86,7 @@ public:
 };
 
 std::ostream& operator<<(std::ostream&, const hsystem&);
+
+#include "hsystem.inl"
 
 #endif

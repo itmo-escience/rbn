@@ -152,10 +152,20 @@ node_ptr network::get_random_node(){ //losuje wezel
 	return (*it)->get_me();
 }
 
-void network::update_state(void){
-	nodes_it it = n_all.begin();
-	for(int j = 0; j < N; ++j, ++it){
-		(*it)->update_state(); //aktualizacja stanow wezlow
+void network::update_state(void) {
+	update_state(execution_policy::default());
+}
+
+void network::update_state(execution_policy::nested_openmp_parallel_tag) {
+	#pragma omp parallel default(none) shared(n_all)
+	{
+		nodes_it it = n_all.begin();
+		for(int j = 0; j < N; ++j, ++it){
+			#pragma omp single nowait
+			{
+				(*it)->update_state(); //aktualizacja stanow wezlow
+			}
+		}
 	}
 }
 
@@ -174,47 +184,8 @@ void network::clear_sum(void){
 	}
 }
 
-long network::find_attractor(void){ //znajduje atraktor danej sieci i zwraca jego okres 
-	long T[4] = {100, 1000, 10000, 100000};
-	int max = 3;
-	long i, k;
-	//nodes_it it;
-	
-	ints state0 = state, state1;
-	//cout << "fas";
-	for(i = 1, k = 0; i < T[max]; ++i){
-		//cout << i;
-		update_state();
-		//cout << i;
-		state1 = get_network_state();
-		if(state0 == state1)
-			break;
-		
-		if(i == T[k]){
-			++k;
-			//cout << "ts";
-			state0 = get_network_state();
-			clear_sum();
-			//cout << "te";
-			//cout << (*this) << " ";
-		}
-		//cout << (*this) << " ";
-	}
-	//cout << " " << i << " ";
-	this->T = i;
-	//cout << "fae";
-	if(i == T[max]){
-#ifndef FOUT
-		cout << "koniec";
-#endif
-		this->T = i - T[max - 1];
-		return i - T[max - 1];
-	}
-	else if(k > 0) {
-		this->T = i - T[k-1];
-		return i - T[k-1];
-	}
-	else return i;
+long network::find_attractor(void){ //znajduje atraktor danej sieci i zwraca jego okres
+	return find_attractor(execution_policy::default());
 }
 
 //#define UPDATE_CC
@@ -346,16 +317,7 @@ void network::update_connection(void){
 }
 
 void network::iterate(void){ //iteracja sieci
-	//cout << "2. znajdywanie atraktora" << endl;
-	//2. losowanie sieci i znajdywanie atraktora
-	//cout << "is";
-	//cout << "gen_st" << endl;
-	generate_states();
-	//cout << "atr" << endl;
-	T = find_attractor();
-	//cout << "Attractor period: " << T << std::endl;
-
-	update_connection();
+	iterate(execution_policy::default());
 }
 
 ints network::get_network_state(void){

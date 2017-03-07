@@ -1,4 +1,5 @@
 #include "hsystem.hpp"
+#include "execution_policy.hpp"
 
 #include <stdexcept>
 #include <ctime>
@@ -297,112 +298,43 @@ void hsystem::generate_interconnections(int c){
 	//cout << (*nets[0]) << endl << (*nets[1]) << endl;
 }
 
+
 int hsystem::find_attractor(void) {
-#ifdef ENABLE_PARALLEL
+	return find_attractor(execution_policy::default());
+}
+
+int hsystem::find_attractor(execution_policy::gpu_tag) {
 	gpu::rbn rbn = gpu::converter::make_rbn(*this);
 	gpu::state gpu_state = gpu::converter::get_state(*this);
 	gpu::attractor_info ai = rbn.find_attractor(gpu_state, params.max_attractor_length, params.use_knuth);
 	gpu::converter::update_original_network(ai, *this);
 	T = ai.length;
 	it = ai.length + ai.transient;
-#else
-	unsigned int T[] = {100, 1000, 10000, 100000};
-	const int max = sizeof(T) / sizeof(unsigned int) - 1;
-	unsigned int i, j, k;
-
-	ints2 state0 = state, state1;
-	for(j = 0; j < nets.size(); ++j){
-		state1.push_back(ints() );
-	}
-
-	for(i = 1, k = 0; i < T[max]; ++i){
-		for(j = 0; j < nets.size(); ++j){
-			//cout << (*nets[j]);
-			nets[j]->update_state();
-			//cout << i;
-			state1[j] = nets[j]->get_network_state();
-		}
-
-		for(j = 0; j < nets.size(); ++j) {
-			nets[j]->update_state_old();
-		}
-
-		if(state0 == state1)
-			break;
-
-		if(i == T[k]){
-			++k;
-			//cout << "ts";
-			state0 = get_network_state();
-			for(j = 0; j < nets.size(); ++j){
-				nets[j]->clear_sum(); //czyszczenie sumy stanow wezlow (potrzebne do wzoru 3)
-			}
-		}
-	}
-
-	it = i;
-	this->T = i;
-
-	if(i == T[max]){
-		cout << "koniec";// << std::endl;
-		this->T = i - T[max - 1];
-	}
-	else if(k > 0) {
-		this->T = i - T[k-1];
-	}
-#endif
-	return this->T;
+	return T;
 }
 
-void hsystem::iterate(void){
-    clock_t t = clock();
-	if(params.rbn_version == 1){
-		for(int i = 0; i < params.network_count; ++i){
-			//nets[i]->iterate();
-			nets[i]->generate_states();
-		}
-		find_attractor();
-		//if (T < 5)
-			//cout << T ;//<< endl;
-		for(int i = 0; i < params.network_count; ++i){
-			nets[i]->set_period(T);
-            size_t nodes_to_rewire = 1;
-			if(params.proportional) {
-				nodes_to_rewire = nets[i]->get_n_all().size() / 80u;
-			}
-            for(size_t u = 0; u < nodes_to_rewire; ++u) {
-                nets[i]->update_connection();
-            }
-		}
+void hsystem::iterate(void) {
+	iterate(execution_policy::default());
+}
+
+void hsystem::iterate_v2(void) {
+	iterate_v2(execution_policy::default());
+}
+
+void hsystem::iterate_v2(execution_policy::nested_openmp_parallel_tag ep) {
+	omp_set_nested(1);
+	#pragma omp parallel for default(none) shared(nets)
+	for(unsigned int i = 0; i < nets.size(); ++i){
+		nets[i]->iterate(ep);
 	}
-	else if(params.rbn_version == 2){
-		for(unsigned int i = 0; i < nets.size(); ++i){
-			nets[i]->iterate();
-		}
+}
+
+void hsystem::iterate_v2(execution_policy::openmp_parallel_tag ep) {
+	omp_set_nested(0);
+	#pragma omp parallel for default(none) shared(nets)
+	for(unsigned int i = 0; i < nets.size(); ++i){
+		nets[i]->iterate(ep);
 	}
-	else if(params.rbn_version == 3){
-		//cout << nets.size();
-		nets[0]->iterate();
-	}
-	else if(params.rbn_version == 4){
-		for(unsigned int i = 0; i < nets.size(); ++i){
-			//nets[i]->iterate();
-			nets[i]->generate_states();
-		}
-		//cout << "fdfd ";
-		find_attractor();
-		//if (T < 5)
-		//cout << T ;//<< endl;
-		for(unsigned int i = 0; i < nets.size(); ++i){
-			nets[i]->set_period(T);
-			nets[i]->update_connection();
-		}
-		//cout << " k ";
-	}
-    static std::ofstream file("time_per_epoch", std::ios::app);
-    t = clock() - t;
-    file << ((float)t)/CLOCKS_PER_SEC << std::endl;
-    file.flush();
 }
 
 ints2 hsystem::get_network_state(void){

@@ -1,4 +1,7 @@
 #include "handler.hpp"
+#include "execution_policy.hpp"
+
+//#include <boost/filesystem.hpp>
 
 handler::handler(string filename) {
 	params = hparams(filename);
@@ -112,6 +115,9 @@ void handler::work(){
 
 		if((params.rbn_version != 4) || (params.scheme != 2)){
 			for(l = 1; l < max; ++l){
+				//std::stringstream ss;
+				//ss << "level_" << l;
+				//boost::filesystem::path path(ss.str());
 
 				hs->generate_hnetwork(l); //1st hierarchy level
 				d_pajek_structure.push_back(hs->print_net());
@@ -121,7 +127,7 @@ void handler::work(){
 						continue;
 
 				for(int i = 0; i < params.iterations; ++i){
-					hs->iterate();
+					hs->iterate(execution_policy::parallel());
 
 					if((i+1) % params.inform_after == 0){
 
@@ -262,7 +268,7 @@ void handler::work(){
 			save(PAJEK_STRUCTURE);
 		if(params.hist_Kout)
 			save(HIST_KOUT);
-		if(params.hist_cc);
+		if(params.hist_cc)
 			save(HIST_CC);
 		reset_vectors();
 
