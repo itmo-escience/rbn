@@ -156,16 +156,15 @@ void network::update_state(void) {
 	update_state(execution_policy::default());
 }
 
+void network::update_n_all_vector(execution_policy::nested_openmp_parallel_tag) {
+	n_all_vector.resize(n_all.size());
+	std::copy(n_all.begin(), n_all.end(), n_all_vector.begin());
+}
+
 void network::update_state(execution_policy::nested_openmp_parallel_tag) {
-	#pragma omp parallel default(none) shared(n_all)
-	{
-		nodes_it it = n_all.begin();
-		for(int j = 0; j < N; ++j, ++it){
-			#pragma omp single nowait
-			{
-				(*it)->update_state(); //aktualizacja stanow wezlow
-			}
-		}
+	#pragma omp parallel for
+	for(int j = 0; j < N; ++j){
+		n_all_vector[j]->update_state(); //aktualizacja stanow wezlow
 	}
 }
 

@@ -7,6 +7,9 @@ void network::update_state(ExecutionPolicy) {
 }
 
 template<class ExecutionPolicy>
+void network::update_n_all_vector(ExecutionPolicy ep) {}
+
+template<class ExecutionPolicy>
 long network::find_attractor(ExecutionPolicy ep) { //znajduje atraktor danej sieci i zwraca jego okres 
 	long T[4] = {100, 1000, 10000, 100000};
 	int max = 3;
@@ -15,13 +18,17 @@ long network::find_attractor(ExecutionPolicy ep) { //znajduje atraktor danej sie
 	
 	ints state0 = state, state1;
 	//cout << "fas";
+	//bool found;
+	update_n_all_vector(ep);
 	for(i = 1, k = 0; i < T[max]; ++i){
 		update_state(ep);
 		update_state_old();
 
 		state1 = get_network_state();
-		if(state0 == state1)
+		//found = (state0 == state1);
+		if(state0 == state1) {
 			break;
+		}
 		
 		if(i == T[k]){
 			++k;

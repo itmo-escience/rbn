@@ -79,6 +79,9 @@ protected:
 
 	long T; //okres atraktora
 	ints state;
+	
+	template<class ExecutionPolicy> void update_n_all_vector(ExecutionPolicy ep);
+	void update_n_all_vector(execution_policy::nested_openmp_parallel_tag);
 };
 
 //bool operator== (ints left, ints right);

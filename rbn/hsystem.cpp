@@ -323,16 +323,16 @@ void hsystem::iterate_v2(void) {
 
 void hsystem::iterate_v2(execution_policy::nested_openmp_parallel_tag ep) {
 	omp_set_nested(1);
-	#pragma omp parallel for default(none) shared(nets)
-	for(unsigned int i = 0; i < nets.size(); ++i){
+	#pragma omp parallel for
+	for(int i = 0; i < static_cast<int>(nets.size()); ++i){
 		nets[i]->iterate(ep);
 	}
 }
 
 void hsystem::iterate_v2(execution_policy::openmp_parallel_tag ep) {
 	omp_set_nested(0);
-	#pragma omp parallel for default(none) shared(nets)
-	for(unsigned int i = 0; i < nets.size(); ++i){
+	#pragma omp parallel for
+	for(int i = 0; i < static_cast<int>(nets.size()); ++i){
 		nets[i]->iterate(ep);
 	}
 }
@@ -406,6 +406,7 @@ long hsystem::get_period(unsigned int n) const{
 		return -1;
 	return nets[n]->get_period();
 }
+
 
 /**
 * Prints network in pajek format
