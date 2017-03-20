@@ -8,14 +8,10 @@
 #include "gpu/converter.hpp"
 #endif
 
-hsystem::hsystem(){
-	rand = my_random::get_instance();
-}
+hsystem::hsystem(): rand() {}
 
-hsystem::hsystem(hparams p){
+hsystem::hsystem(hparams p): rand() {
 	params = p;
-	rand = my_random::get_instance();
-
 	generate_nodes();
 }
 
@@ -405,6 +401,12 @@ long hsystem::get_period(unsigned int n) const{
 	if(n >= nets.size())
 		return -1;
 	return nets[n]->get_period();
+}
+
+long hsystem::get_basin(unsigned int n) const{
+	if(n >= nets.size())
+		return -1;
+	return nets[n]->get_basin();
 }
 
 

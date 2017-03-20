@@ -1,15 +1,13 @@
 #include "node.hpp"
 #include <iostream>
 
-node::node(nodes& all_, int state_, double alpha_) : all(all_), code(all_.size()), state(state_), sum(0), changes(0), p(0.5),  alpha(alpha_){
+node::node(nodes& all_, int state_, double alpha_) : all(all_), code(all_.size()), state(state_), sum(0), changes(0), p(0.5),  alpha(alpha_), random() {
 	state_old = state;
 
 	Kin = 0;
 	Kout = 0;
 	//ext_Kin = 0;
-
-	random = my_random::get_instance();
-
+	
 	codes.push_back(code);
 	level = codes.size() - 1;
 	Kins.push_back(0);

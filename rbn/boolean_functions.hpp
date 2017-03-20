@@ -65,7 +65,7 @@ private:
 //vector of functions
 	ints functions; //tablica zawierajaca funkcje
 //pointer to random generator
-	my_random* rand;
+	my_random rand;
 
 //function that creates functions
 	void generate();//funkcja losujaca

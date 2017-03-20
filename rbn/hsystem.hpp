@@ -54,6 +54,7 @@ public:
 	long get_period() const {return T;}
 	long get_period(unsigned int n) const;
 	long get_basin() const {return it;}
+	long get_basin(unsigned int n) const;
 
 	/*
 	Prints network in pajek format

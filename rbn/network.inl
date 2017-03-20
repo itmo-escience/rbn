@@ -41,6 +41,7 @@ long network::find_attractor(ExecutionPolicy ep) { //znajduje atraktor danej sie
 		//cout << (*this) << " ";
 	}
 	//cout << " " << i << " ";
+	it = i;
 	this->T = i;
 	//cout << "fae";
 	if(i == T[max]){

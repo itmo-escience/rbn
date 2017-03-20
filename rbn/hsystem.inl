@@ -62,6 +62,7 @@ void hsystem::iterate(ExecutionPolicy ep) {
 			//cout << T ;//<< endl;
 		for(int i = 0; i < params.network_count; ++i){
 			nets[i]->set_period(T);
+			nets[i]->set_basin(it);
             size_t nodes_to_rewire = 1;
 			if(params.proportional) {
 				nodes_to_rewire = nets[i]->get_n_all().size() / 80u;

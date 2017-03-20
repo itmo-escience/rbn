@@ -1,9 +1,7 @@
 #include "network.hpp"
 #include <iostream>
 
-network::network(int code_, int N_ = 10) : code(code_), N(N_){
-	rand = my_random::get_instance();
-
+network::network(int code_, int N_ = 10) : code(code_), N(N_), rand() {
 	alpha = doubles();
 	alpha_prop = doubles();
 }

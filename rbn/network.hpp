@@ -63,8 +63,10 @@ public:
 	int get_code() const{return code;}
 	nodes& get_n_all() {return n_all;}
 	long get_period() const {return T;}
+	long get_basin() const {return it;}
 
 	void set_period(long T_) {T = T_;}
+	void set_basin(long it_) {it = it_;}
 
 	friend std::ostream& operator<<(std::ostream&, const network&);
 
@@ -78,6 +80,7 @@ protected:
 	my_random *rand;
 
 	long T; //okres atraktora
+	long it;
 	ints state;
 	
 	template<class ExecutionPolicy> void update_n_all_vector(ExecutionPolicy ep);

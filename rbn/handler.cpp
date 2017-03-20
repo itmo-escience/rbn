@@ -1,4 +1,5 @@
 #include "handler.hpp"
+
 #include "execution_policy.hpp"
 
 //#include <boost/filesystem.hpp>
@@ -136,6 +137,7 @@ void handler::work(){
 						t = clock() - t;
 						cout << "elapsed s: " << ((float)t)/CLOCKS_PER_SEC << endl;
 						t = clock();
+						//log_epoch_finished();
 #else
 						fout << i+1 << ": Connectivity of 1st network: " << hs->get_Kin(0) << endl;
 						t = clock() - t;
@@ -159,7 +161,7 @@ void handler::work(){
 
 							for(; it != end; ++it){
 								hi.push_back(double ((*it)->get_changes()) / T);
-								hk.push_back((*it)->get_Kin() );
+								hk.push_back((*it)->get_Kin() ); 
 								hkout.push_back((*it)->get_Kout() );
 								hc.push_back((*it)->get_CC());
 							}
@@ -247,7 +249,7 @@ void handler::work(){
 					}
 				}
 			}
-		}
+		 }
 		//saving last structure
 		d_pajek_structure.push_back(hs->print_net());
 
@@ -285,7 +287,7 @@ void handler::work(){
 #endif
 	}
 }
-	
+
 void handler::save(OPTIONS opt){
 	//int n = params.get_network_count();
 	//int nodes_nr = params.levels[0];
@@ -457,3 +459,57 @@ void handler::prepare_network_structure(hsystem* hs, int nr){
 		}
 }
 */
+
+/*BOOST_FUSION_ADAPT_STRUCT(
+	handler::node_info,
+	(int, in_degree)
+	(int, out_degree)
+	(int, clustering_corfficient)
+	(double, activity)
+);
+
+BOOST_FUSION_DEFINE_STRUCT(,
+	save_flags,
+	(bool, hist_Kin)
+	(bool, hist_Kout)
+	(bool, hist_cc)
+	(bool, hist_info)
+)
+
+template<class T, class U>
+void save_node_metric(std::ostream& os, T metric, U delimiter) {
+	if(os.is_open()) {
+		os << metric << delimiter;
+	}
+}
+
+void handler::save_nodes_info(const std::vector<node_info>& nodes) const {
+	std::ofstream s_in_degree;
+	std::ofstream s_out_degree;
+	std::ofstream s_clustering_corfficient;
+	std::ofstream s_activity;
+
+	if(params.hist_Kin) {
+		s_in_degree.open(params.f_hist_Kin, std::ios::app);
+	}
+	if(params.hist_Kout) {
+		s_in_degree.open(params.f_hist_Kout, std::ios::app);
+	}
+	if(params.hist_info) {
+		s_in_degree.open(params.f_hist_info, std::ios::app);
+	}
+	if(params.hist_cc) {
+		s_in_degree.open(params.f_hist_cc, std::ios::app);
+	}
+
+	for(size_t  = 0; i < nodes.size(); ++i) {
+		save_node_metric(s_in_degree, node.in_degree, params.delimiter);
+		save_node_metric(s_out_degree, node.out_degree, params.delimiter);
+		save_node_metric(s_clustering_corfficient, node.clustering_corfficient, params.delimiter);
+		save_node_metric(s_activity, node.activity, params.delimiter);
+	}
+}
+
+void handler::epoch_finished(const std::vector<node_info>& nodes, const network_info& nets) {
+	save_nodes_info(nodes)
+}*/

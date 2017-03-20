@@ -1,18 +1,8 @@
 #include "my_random.hpp"
 #include <iostream>
 
-my_random* my_random::rand = 0;
-
 my_random::my_random(){
 	rnd_gen.seed(static_cast<unsigned int>(std::time(0))); //seed generatora
-}
-
-my_random* my_random::get_instance(){
-	if(!rand){
-		rand = new my_random();
-		return rand;
-	}
-	else return rand;
 }
 
 int my_random::next_int(const int right_inc){ 
