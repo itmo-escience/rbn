@@ -23,8 +23,20 @@ typedef vector<network_ptr> networks;
 
 class hsystem {
 public:
-	hsystem();
-	hsystem(hparams p);
+	/**
+	 * Default constructor. Does not generate any nodes or networks.
+	 *
+	 * @param seed (Optional) A number that is used to seed the hsystem's pRNG.
+	 */
+	explicit hsystem(unsigned seed = my_random::default_seed());
+
+    /**
+	 * Constructor that accepts simulation parameters. Generates nodes, but does not split them into networks.
+	 *
+	 * @param p Simulation parameters, see hparams.hpp for description.
+	 * @param seed (Optional) A number that is used to seed the hsystem's pRNG. 
+	 */
+	hsystem(hparams p, unsigned seed = my_random::default_seed());
 
 	void generate_nodes(int N); //generates nodes
 	void generate_nodes();
@@ -76,7 +88,7 @@ private:
 	long it; //period and basin length
 	ints2 state; //state of networks
 
-	my_random *rand;
+	my_random rand;
 
 public:
 	enum INTER_CON_MODELS{ //generating interconnections models

@@ -1,9 +1,12 @@
 #include "boolean_functions.hpp"
 #include <iostream>
 
-boolean_functions::boolean_functions(double p_ = 0.5, int con = 0) : p(p_), connections(con){
+boolean_functions::boolean_functions(my_random& rand_, double p_, int con)
+	: p(p_)
+	, connections(con)
+	, rand(rand_)
+{
 //	rnd_gen.seed(static_cast<unsigned int>(std::time(0))); //seed generatora
-	rand = my_random::get_instance();
 	//if(connections == 0)
 	//	return;
 	functions.reserve(connections);
@@ -63,7 +66,7 @@ void boolean_functions::generate(){
 	while(i-- > 0)
 		poss *= 2;
 	for(i = 0; i < poss; ++i){
-		if(rand->next_double() > p)
+		if(rand.next_double() > p)
 			boolean_functions::functions.push_back(0);
 		else boolean_functions::functions.push_back(1);
 	}
