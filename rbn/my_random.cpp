@@ -1,8 +1,18 @@
 #include "my_random.hpp"
 #include <iostream>
+#include <boost/random/random_device.hpp>
 
-my_random::my_random(){
-	rnd_gen.seed(static_cast<unsigned int>(std::time(0))); //seed generatora
+
+
+
+my_random::my_random(unsigned seed) {
+	rnd_gen.seed(seed); //seed generatora
+}
+
+
+unsigned my_random::default_seed() {
+	boost::random_device rd;
+	return rd();
 }
 
 int my_random::next_int(const int right_inc){ 
@@ -14,6 +24,10 @@ int my_random::next_int(const int left_inc, const int right_inc){ //losuje int z
 		std::cout << "error:my_random:next_int";
 	random::uniform_int_distribution<> dist(left_inc, right_inc);
 	return dist(rnd_gen);
+}
+
+unsigned my_random::next_unsigned(){
+	return rnd_gen();
 }
 
 double my_random::next_double(){ //losuje double z przedzialu [0,1] z rozkladu jednorodnego

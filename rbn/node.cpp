@@ -1,19 +1,37 @@
 #include "node.hpp"
 #include <iostream>
 
-node::node(nodes& all_, int state_, double alpha_) : all(all_), code(all_.size()), state(state_), sum(0), changes(0), p(0.5),  alpha(alpha_), random() {
+
+node::node(my_random& rand, nodes& all_, int state_, double alpha_)
+	: all(all_)
+	, code(all_.size())
+	, state(state_)
+	, sum(0)
+	, changes(0)
+	, p(0.5)
+	, alpha(alpha_)
+	, random(rand)
+{
 	state_old = state;
 
 	Kin = 0;
 	Kout = 0;
 	//ext_Kin = 0;
+
 	
 	codes.push_back(code);
 	level = codes.size() - 1;
 	Kins.push_back(0);
 }
 
-node::node(int code_, nodes& all_, double alpha_) : all(all_), code(code_), p(0.0), alpha(alpha_) {}
+
+node::node(my_random& rand, int code_, nodes& all_, double alpha_)
+	: all(all_)
+	, code(code_)
+	, p(0.0)
+	, alpha(alpha_)
+	, random(rand)
+{}
 
 node::~node() {}
 
@@ -311,10 +329,12 @@ int node::set_in_connections(int Kin_){
 	int j = 0;
 	while(j < Kin){
 
-		int k = random->next_int(0, vision.size()-1);
+
+		int k = random.next_int(0, vision.size()-1);
 
 /*
-		double r = random->next_double();
+
+		double r = random.next_double();
 		unsigned int k;
 		for(k = 0; k < distr_vision.size(); ++k){
 			if(r <= distr_vision[k])
@@ -341,7 +361,8 @@ int node::set_in_connections(int Kin_){
 
 void node::create_boolean_functions(void){
 	funs.reset();
-	funs = funs_ptr(new boolean_functions(p, Kin));// + ext_Kin));
+
+	funs = funs_ptr(new boolean_functions(random, p, Kin));// + ext_Kin));
 }
 
 void node::update_boolean_functions(void){
@@ -379,10 +400,12 @@ int node::add_in_connections(int con){ //dodaje con polaczen wejsciowych
 		unsigned int k;
 //#ifndef PA
 		if(!PA)
-			k = random->next_int(0, vision.size()-1);
+
+			k = random.next_int(0, vision.size()-1);
 //#else
 		else{
-			double r = random->next_double();
+
+			double r = random.next_double();
 			//unsigned int k;
 			for(k = 0; k < distr_vision.size(); ++k){
 				if(r <= distr_vision[k])
@@ -440,11 +463,13 @@ int node::remove_in_connections(int con){ //usuwa con polaczen wejsciowych
 //#ifndef PD
 		if(!PD)
 			//equal disconnection prob
-			k = random->next_int(0, remove_vision.size()-1);
+
+			k = random.next_int(0, remove_vision.size()-1);
 //#else
 		else{
 			//modified disconnection prob.
-			double r = random->next_double();
+
+			double r = random.next_double();
 			//unsigned int k;
 			for(k = 0; k < distr_vision.size(); ++k){
 				if(r <= distr_vision[k])
@@ -652,7 +677,8 @@ double node::get_e_in(const node_ptr& ptr) const{ //returns e_in to connecting t
 }
 
 double node::get_e_in(const int k) const{ //returns e_in to connecting to the node of given int code
-	node_ptr ptr = node_ptr(new node(k, all, 0.0));
+
+	node_ptr ptr = node_ptr(new node(random, k, all, 0.0));
 	//advance(it, k);
 
 	return get_e_in(ptr);
