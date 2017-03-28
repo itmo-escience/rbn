@@ -1,5 +1,3 @@
 # rbn
 
-CUDA implementation of HARBN
-
-Current version needs testing and performance improvement.
+CUDA/OpenMP implementation of HARBN
