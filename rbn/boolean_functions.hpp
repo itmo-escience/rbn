@@ -32,29 +32,50 @@ This class works if the Kin is not bigger than 28.
 
 class boolean_functions{
 public:
-/* constructor
-p - probability of generating ones,
-con - number of connections
-*/
-	boolean_functions(double p, int con);
+	/**
+	 * Constructor.
+	 * 
+	 * @param rand_ Reference to a pRNG that will be used to generate random functions.
+	 * @param p     Probability of generating ones.
+	 * @param con   Number of connections.
+	 */
+	boolean_functions(my_random& rand_, double p_ = 0.5, int con = 0);
 	~boolean_functions();
 
-//	void set_rand_gen(boost::mt19937 gen_){rnd_gen = gen_;}
-//updates all connections (generates all of them ones again)
+	/**
+	 * Updates all connections (generates all of them once again).
+	 */
 	void update_connections();
-//updates all connections with new connections (con) number
+
+	/**
+	 * Updates all connections with new connections (con) number.
+	 *
+	 * @param con Number of connections.
+	 */
 	void update_connections(int con);
-/*returns the result of given RBF
-fun - number of a function
-*/
+
+	/**
+	 * Returns the result of given RBF.
+	 *
+	 * @param fun Number of a function.
+	 * @returns The result of given RBF.
+	 */
 	const int get_value(int fun); //zwraca wynik danej funkcji boolowskiej
-/*returns the result of given RBF
-inputs - table of ones and zeros
-*/
+
+	/**
+	 * Returns the result of given RBF.
+	 *
+	 * @param inputs Table of ones and zeros.
+	 * @returns The result of given RBF.
+     */
 	const int get_value(int* inputs); //zwraca wynik dla danej serii wejsc
-/*returns the result of given RBF
-inputs - set of pointers to nodes
-*/
+
+	/**
+	 * Returns the result of given RBF.
+	 *
+	 * @param inputs Set of pointers to nodes.
+	 * @returns The result of given RBF.
+	 */
 	const int get_value(const nodes& inputs); //zwraca wynik dla danej serii wejsc
 
 private:
@@ -64,8 +85,8 @@ private:
 	int connections; //liczba polaczen danego wezla
 //vector of functions
 	ints functions; //tablica zawierajaca funkcje
-//pointer to random generator
-	my_random* rand;
+// random generator
+	my_random& rand;
 
 //function that creates functions
 	void generate();//funkcja losujaca

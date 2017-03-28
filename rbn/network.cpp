@@ -1,11 +1,13 @@
 #include "network.hpp"
 #include <iostream>
 
-network::network(int code_, int N_ = 10) : code(code_), N(N_){
-	rand = my_random::get_instance();
 
+network::network(int code_, int N_, unsigned seed)
+	: code(code_), N(N_), rand(seed)
+{
 	alpha = doubles();
 	alpha_prop = doubles();
+	std::cout << "Created networks's pRNG with seed " << seed << std::endl;
 }
 
 void network::generate_network(int Kin_){ //generuje wezly i polaczenia poczatkowe
@@ -49,8 +51,9 @@ void network::generate_nodes(){ //generates nodes
 	}//*/
 	
 	for(i = 0; i < N; ++i){
-		int k = rand->next_int(1);
-		node_ptr ptr = node_ptr(new node(n_all, k, alphas[i]));
+
+		int k = rand.next_int(1);
+		node_ptr ptr = node_ptr(new node(rand, n_all, k, alphas[i]));
 		ptr->push_code(code);
 		ptr->set_shared_from_this(ptr);
 
@@ -91,7 +94,8 @@ void network::generate_states(){
 	
 	int k;
 	for(int i = 0; i < N; ++i, ++it){
-		k = rand->next_int(1);
+
+		k = rand.next_int(1);
 		(*it)->set_state(k);
 		(*it)->clear_sum();
 		state.push_back(k);
@@ -128,14 +132,16 @@ void network::set_alpha(doubles alpha_){ //ustawia parametry alpha
 void network::set_connection(int node_code, node_ptr n){ //nowym wejsciem wezla o kodzie note_code staje sie wezel node
 	nodes_it it;
 
-	node_ptr hlp(new node(node_code, n_all));
+
+	node_ptr hlp(new node(rand, node_code, n_all));
 	it = n_all.find(hlp);
 
 	(*it)->add_in_connection(n);
 }
 
 int network::set_connection(node_ptr n){ //nowym wejsciem jednego z wezlow sieci staje sie wezel node
-	int nr = rand->next_int(0, n_all.size()-1);
+
+	int nr = rand.next_int(0, n_all.size()-1);
 	nodes_it it = n_all.begin();
 
 	advance(it, nr);
@@ -144,7 +150,8 @@ int network::set_connection(node_ptr n){ //nowym wejsciem jednego z wezlow sieci
 }
 
 node_ptr network::get_random_node(){ //losuje wezel
-	int nr = rand->next_int(0, n_all.size()-1);
+
+	int nr = rand.next_int(0, n_all.size()-1);
 	nodes_it it = n_all.begin();
 
 	advance(it, nr);
@@ -213,7 +220,8 @@ void network::update_connection(void){
 		++j;
 		it = beg;
 
-		int nr = rand->next_int(0, n_all.size()-1);
+
+		int nr = rand.next_int(0, n_all.size()-1);
 		//cout << "wylosowano: " << nr << std::endl;
 		advance(it, nr);
 
@@ -230,7 +238,8 @@ void network::update_connection(void){
 #ifndef REMOVE_MORE
 		if((av_act >= 1 - alpha) || (av_act <= 0 + alpha)){ //wezel jest zamrozony, trzeba dodac polaczenie
 #else
-		double r = rand->next_double(),
+
+		double r = rand.next_double(),
 				cc = (*it)->calc_CC()*10;
 		if(cc < 0)
 			cc = 0.5;
@@ -239,12 +248,14 @@ void network::update_connection(void){
 		if(r < cc && ((av_act >= 1 - alpha) || (av_act <= 0 + alpha) )){ //wezel jest zamrozony, trzeba dodac polaczenie
 #endif
 #ifdef ADD_LESS
-			double r = rand->next_double();
+
+			double r = rand.next_double();
 			if(r > 0.5)
 				continue;
 #endif
 #ifdef CHOOSE_ANOTHER
-			double r = rand->next_double();
+
+			double r = rand.next_double();
 			if(r > 0.5){
 				--j;
 				continue;
@@ -297,7 +308,8 @@ void network::update_connection(void){
 	//update p
 #ifdef FLUCTUATION
 	//zmieniamy p o 0.01. Gdy wylosujemy 1, to +0.01, w p.p. -0.01.
-	int p_val = rand->next_int(1);
+
+	int p_val = rand.next_int(1);
 	double p_ch = p_val ? 0.01: -0.01;
 
 	(*it)->update_p(p_ch);

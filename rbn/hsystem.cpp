@@ -8,14 +8,12 @@
 #include "gpu/converter.hpp"
 #endif
 
-hsystem::hsystem(){
-	rand = my_random::get_instance();
-}
 
-hsystem::hsystem(hparams p){
+hsystem::hsystem(unsigned seed): rand(seed) { }
+
+hsystem::hsystem(hparams p, unsigned seed): rand(seed) {
+	std::cout << "Created hsystem's pRNG with seed " << seed << std::endl;
 	params = p;
-	rand = my_random::get_instance();
-
 	generate_nodes();
 }
 
@@ -23,8 +21,8 @@ void hsystem::generate_nodes(int N){//generates nodes
 	all.clear();
 	//creating N nodes
 	for(int i = 0; i < N; ++i){
-		int k = rand->next_int(1);
-		node_ptr ptr = node_ptr(new node(all, k, 0));
+		int k = rand.next_int(1);
+		node_ptr ptr = node_ptr(new node(rand, all, k, 0));
 		ptr->set_shared_from_this(ptr);
 		if(params.rbn_version != 1) {
 			ptr->set_preferential(params.link_update);
@@ -59,12 +57,12 @@ void hsystem::generate_hnetwork(int nets_nr, ints Kins_){
 
 	for(int i = 0; i < nets_nr; ++i){
 
-		nets.push_back(network_ptr(new network(i+1, nodes_nr)));
+		nets.push_back(network_ptr(new network(i+1, nodes_nr, rand.next_unsigned())));
 		nets[i]->set_alpha(0);
 
 		for(int j = 0; j < nodes_nr; ++j){
 			nodes_it it;
-			node_ptr hlp(new node(nodes_nr*i + j, all));
+			node_ptr hlp(new node(rand, nodes_nr*i + j, all));
 			it = all.find(hlp);
 
 			nets[i]->add_node(*it);
@@ -76,7 +74,7 @@ void hsystem::generate_hnetwork(int nets_nr, ints Kins_){
 	int k = nets_nr * nodes_nr, l = 0;
 	while (N > 0){
 		nodes_it it;
-		node_ptr hlp(new node(k, all));
+		node_ptr hlp(new node(rand, k, all));
 		it = all.find(hlp);
 
 		nets[l]->add_node(*it);
@@ -215,7 +213,8 @@ void hsystem::generate_interconnections(int c){
 					//cout << "tu";
 					node_ptr n = nets[j]->get_random_node();
 					//cout << "tu";
-					int nr = rand->next_int(0, params.get_network_size(i) - 1);
+
+					int nr = rand.next_int(0, params.get_network_size(i) - 1);
 
 					try{
 						nets[i]->set_connection(nr, n);
@@ -244,7 +243,8 @@ void hsystem::generate_interconnections(int c){
 					//cout << "tu ";
 					node_ptr n = nets[j]->get_random_node();
 					//cout << "ta ";
-					//int nr = rand->next_int(0, params.get_network_size(i) - 1);
+
+					//int nr = rand.next_int(0, params.get_network_size(i) - 1);
 					//cout << "te ";
 					try{
 						//nets[i]->set_connection(nr, n);
@@ -265,16 +265,19 @@ void hsystem::generate_interconnections(int c){
 		int error = 0;
 		for(int k = 0; k < miss; ++k){
 			//losuj siec wyjsciowa
-			int f1 = rand->next_int(0, params.network_count - 1);
+
+			int f1 = rand.next_int(0, params.network_count - 1);
 			//losuj wezel
 			node_ptr n1 = nets[f1]->get_random_node();
 
 			//losuj siec wejsciowa
-			int f2 = rand->next_int(0, params.network_count - 2);
+
+			int f2 = rand.next_int(0, params.network_count - 2);
 			if(f2 == f1)
 				++f2;
 			//losuje wezel z tej sieci
-			//int nr = rand->next_int(0, params.get_network_size(f2) - 1);
+
+			//int nr = rand.next_int(0, params.get_network_size(f2) - 1);
 
 			//std::cout << f1 << "(" << n1->get_code() << ") >> " << f2 << "(" << nr << ")" << std::endl;
 
@@ -405,6 +408,12 @@ long hsystem::get_period(unsigned int n) const{
 	if(n >= nets.size())
 		return -1;
 	return nets[n]->get_period();
+}
+
+long hsystem::get_basin(unsigned int n) const{
+	if(n >= nets.size())
+		return -1;
+	return nets[n]->get_basin();
 }
 
 

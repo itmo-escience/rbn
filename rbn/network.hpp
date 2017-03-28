@@ -21,7 +21,14 @@ typedef vector<double> doubles;
 class network{
 public:
 	//TODO: other constructors
-	network(int code, int N_);
+    /**
+	 * Constructor. Does not generate neither nodes nor structure.
+	 *
+	 * @param code The code of the network.
+	 * @param N_ (Optional, default 10) The number of nodes in the network.
+	 * @param seed (Optional) A number that is used to seed the network's pRNG.
+	 */
+	network(int code, int N_ = 10, unsigned seed = my_random::default_seed());
 	~network(){}
 
 	void generate_network(int Kin_); //generuje wezly i polaczenia poczatkowe
@@ -63,8 +70,10 @@ public:
 	int get_code() const{return code;}
 	nodes& get_n_all() {return n_all;}
 	long get_period() const {return T;}
+	long get_basin() const {return it;}
 
 	void set_period(long T_) {T = T_;}
+	void set_basin(long it_) {it = it_;}
 
 	friend std::ostream& operator<<(std::ostream&, const network&);
 
@@ -75,9 +84,10 @@ protected:
 	doubles alpha_prop; //patrz wyzej
 	nodes n_all; //wezly
 	std::vector<node_ptr> n_all_vector;
-	my_random *rand;
+	my_random rand;
 
 	long T; //okres atraktora
+	long it;
 	ints state;
 	
 	template<class ExecutionPolicy> void update_n_all_vector(ExecutionPolicy ep);

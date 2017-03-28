@@ -31,8 +31,8 @@ typedef std::vector<double> doubles;
 //class representing node
 class node {
 public:
-	node(int code_, nodes& all_, double alpha_ = 0.0);
-	node(nodes& all_, int state = 0, double alpha_ = 0.0);
+	node(my_random& rand, int code_, nodes& all_, double alpha_ = 0.0);
+	node(my_random& rand, nodes& all_, int state = 0, double alpha_ = 0.0);
 	~node();// {if(p) std::cout << "destroying node nr: " << code << std::endl;}
 
 	void set_nodes(nodes& all_) {all = all_;}
@@ -120,7 +120,7 @@ protected:
 	long sum; //suma zmieniana w trakcie iterowania. Suma stanow wezla.
 	long changes; //liczba zmian stanu wezla
 
-	my_random* random;
+	my_random& random;
 	funs_ptr funs; //losowe funkcje boolowskie
 	double p; //p-stwo generowania losowych funkji boolowskich
 	const double alpha; //parametr okreslajacy zmiennosc polaczen tego wezla
