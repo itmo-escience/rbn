@@ -72,13 +72,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\magistr\Downloads\boost_1_60_0\boost_1_60_0;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>C:\Users\nano\Downloads\boost_1_60_0\boost_1_60_0;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Users\magistr\Downloads\boost_1_60_0\boost_1_60_0;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\magistr\Downloads\boost_1_60_0\boost_1_60_0;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>C:\Users\nano\Downloads\boost_1_60_0\boost_1_60_0;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -170,6 +170,8 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boolean_functions.hpp" />
+    <ClInclude Include="buffer_2d.hpp" />
+    <ClInclude Include="execution_policy.hpp" />
     <ClInclude Include="fluctuation.hpp" />
     <ClInclude Include="gpu\attractor_info.hpp" />
     <ClInclude Include="gpu\converter.hpp" />
@@ -201,6 +203,10 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="gpu\detail\device\liu_bassler_attractor_finder.cu" />
     <CudaCompile Include="gpu\detail\device\_rbn.cu" />
     <CudaCompile Include="gpu\rbn.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="hsystem.inl" />
+    <None Include="network.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

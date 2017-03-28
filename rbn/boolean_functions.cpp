@@ -66,8 +66,11 @@ void boolean_functions::generate(){
 	while(i-- > 0)
 		poss *= 2;
 	for(i = 0; i < poss; ++i){
+		if(rand.next_double() > p) {
 			boolean_functions::functions.push_back(0);
-		else boolean_functions::functions.push_back(1);
+		} else {
+			boolean_functions::functions.push_back(1);
+		}
 	}
 
 }
